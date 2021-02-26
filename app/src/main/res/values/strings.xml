@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">App65</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="phone1_label">Phone #1:</string>
+    <string name="phone2_label">Phone #2:</string>
+    <string name="email1_label">E-mail #1:</string>
+    <string name="email2_label">E-mail #2:</string>
+    <string name="description_label">Description:</string>
+    <string name="big_photo">Big photo</string>
+    <string name="photo">Photo</string>
+    <string name="contact_list_fragment_title">Contact list</string>
+    <string name="contact_details_fragment_title">Contact details</string>
+</resources>
