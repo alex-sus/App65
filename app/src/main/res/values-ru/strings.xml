@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">App65</string>
+    <string name="phone1_label">Телефон #1:</string>
+    <string name="phone2_label">Телефон #2:</string>
+    <string name="email1_label">E-mail #1:</string>
+    <string name="email2_label">E-mail #2:</string>
+    <string name="description_label">Описание:</string>
+    <string name="big_photo">Большое фото</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="photo">Фото</string>
+    <string name="contact_list_fragment_title">Список контактов</string>
+    <string name="contact_details_fragment_title">Детали контакта</string>
+</resources>
