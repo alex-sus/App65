@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="frag_container_padding">8dp</dimen>
+    <dimen name="contact_details_fragment_padding">8dp</dimen>
+    <dimen name="contact_list_fragment_padding">8dp</dimen>
+    <dimen name="normal_horizontal_gap">16dp</dimen>
+    <dimen name="small_horizontal_gap">8dp</dimen>
+    <dimen name="small_vertical_gap">8dp</dimen>
+    <dimen name="normal_vertical_gap">16dp</dimen>
+    <dimen name="divider_thickness">1dp</dimen>
+</resources>
