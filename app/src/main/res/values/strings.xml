@@ -11,4 +11,5 @@
     <string name="photo">Photo</string>
     <string name="contact_list_fragment_title">Contact list</string>
     <string name="contact_details_fragment_title">Contact details</string>
+    <string name="loading_msg">Loading...</string>
 </resources>

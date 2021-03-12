@@ -1,6 +1,6 @@
 package ru.yodata.app65.model
 
-data class MyContact(
+data class Contact(
         val id: String,
         val name: String,
         val phone1: String,

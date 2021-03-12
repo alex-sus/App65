@@ -1,10 +1,12 @@
 package ru.yodata.app65.utils
 
-import ru.yodata.app65.model.MyContact
+import ru.yodata.app65.model.Contact
 
 object Constants {
 
-    val contactList: List<MyContact> = listOf(MyContact(
+    const val TAG = "App65"
+
+    val contactList: List<Contact> = listOf(Contact(
             id = "1",
             name = "Суслопаров Алексей Владимирович",
             phone1 = "+7-909-111-22-33",

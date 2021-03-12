@@ -25,6 +25,7 @@
         android:layout_marginStart="@dimen/normal_horizontal_gap"
         android:layout_marginTop="@dimen/small_vertical_gap"
         android:singleLine="false"
+        android:text="@string/loading_msg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/photoIv"
         app:layout_constraintTop_toTopOf="parent"
