@@ -115,6 +115,7 @@
         android:layout_marginStart="@dimen/normal_horizontal_gap"
         android:layout_marginTop="@dimen/normal_vertical_gap"
         android:singleLine="false"
+        android:text="@string/loading_msg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/bigPhotoIv"
         app:layout_constraintTop_toTopOf="parent"
@@ -128,7 +129,7 @@
         android:layout_marginStart="@dimen/normal_horizontal_gap"
         android:layout_marginTop="@dimen/normal_vertical_gap"
         app:layout_constraintStart_toEndOf="@+id/phone1Label"
-        app:layout_constraintTop_toBottomOf="@+id/bigPhotoIv"
+        app:layout_constraintTop_toBottomOf="@+id/divider3"
         tools:text="(3412)77-88-99" />
 
     <TextView
@@ -139,7 +140,7 @@
         android:layout_marginTop="@dimen/normal_vertical_gap"
         android:text="@string/phone1_label"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bigPhotoIv" />
+        app:layout_constraintTop_toBottomOf="@+id/divider3" />
 
     <View
         android:id="@+id/divider"
@@ -156,6 +157,47 @@
         android:layout_marginTop="@dimen/normal_vertical_gap"
         android:background="?android:attr/listDivider"
         app:layout_constraintTop_toBottomOf="@+id/email2Label" />
+
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@+id/birthdayLabel"
+        tools:layout_editor_absoluteX="8dp" />
+
+    <TextView
+        android:id="@+id/birthdayLabel"
+        style="@style/CommonLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:text="@string/birthday_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bigPhotoIv" />
+
+    <TextView
+        android:id="@+id/birthdayTv"
+        style="@style/CommonValueStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        app:layout_constraintStart_toEndOf="@+id/birthdayLabel"
+        app:layout_constraintTop_toBottomOf="@+id/bigPhotoIv"
+        tools:text="13 ноября" />
+
+    <ToggleButton
+        android:id="@+id/remindBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOff="@string/remindBtnOff_msg"
+        android:textOn="@string/remindBtnOn_msg"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/divider3"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -11,4 +11,15 @@
     <string name="photo">Фото</string>
     <string name="contact_list_fragment_title">Список контактов</string>
     <string name="contact_details_fragment_title">Детали контакта</string>
+    <string name="loading_msg">Идет загрузка...</string>
+    <string name="birthday_label">Дата рождения:</string>
+    <string name="birthday_msg">"Сегодня день рождения у "</string>
+    <string name="set_alarm_msg">Напоминание установлено!</string>
+    <string name="cancel_alarm_msg">Напоминание отменено!</string>
+    <string name="remindBtnOn_msg">Включено</string>
+    <string name="remindBtnOff_msg">Выключено</string>
+    <string name="notification_channel_name">Сообщения приложения App65</string>
+    <string name="notification_channel_description">Напоминания о днях рождения</string>
+    <string name="notification_title">Не забудьте поздравить!</string>
+    <string name="notification_let_see_msg">Посмотрите напоминание!</string>
 </resources>
