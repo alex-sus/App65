@@ -2,22 +2,29 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.yodata.app65">
 
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App65">
+        <receiver
+            android:name=".utils.alarmbroadcast.BirthdayAlarmReceiver"
+            android:enabled="true"
+            android:exported="true">
+        </receiver>
 
         <service
-            android:name=".service.ContactLoaderService"
+            android:name="ru.yodata.app65.utils.service.ContactLoaderService"
             android:enabled="true"
             android:exported="false">
         </service>
 
-        <activity
-            android:name=".view.MainActivity">
+        <activity android:name=".view.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
