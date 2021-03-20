@@ -10,8 +10,7 @@ import kotlinx.coroutines.*
 import ru.yodata.app65.R
 import ru.yodata.app65.databinding.FragmentContactListBinding
 import ru.yodata.app65.model.Contact
-import ru.yodata.app65.service.OnContactLoaderServiceCallback
-import ru.yodata.app65.utils.Constants
+import ru.yodata.app65.utils.service.OnContactLoaderServiceCallback
 import ru.yodata.app65.utils.Constants.TAG
 
 class ContactListFragment : Fragment(R.layout.fragment_contact_list) {

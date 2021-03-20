@@ -1,4 +1,4 @@
-package ru.yodata.app65.service
+package ru.yodata.app65.utils.service
 
 import android.app.Service
 import android.content.Intent
@@ -6,6 +6,7 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import kotlinx.coroutines.*
+import ru.yodata.app65.model.Contact
 import ru.yodata.app65.utils.Constants.TAG
 import ru.yodata.app65.utils.Constants.contactList
 
@@ -16,12 +17,6 @@ class ContactLoaderService : Service() {
     }
 
     private val binder = ContactLoaderBinder()
-    private lateinit var coroutineScope: CoroutineScope
-
-    override fun onCreate() {
-        super.onCreate()
-        coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    }
 
     override fun onBind(intent: Intent): IBinder {
         Log.d(TAG,"Bind произошел сейчас:")
@@ -39,20 +34,16 @@ class ContactLoaderService : Service() {
 
     override fun onDestroy() {
         Log.d(TAG,"Сервис уничтожен.")
-        // Убить все долгие работы по загрузке данных, даже если они еще продолжаются
-        coroutineScope.cancel()
         super.onDestroy()
     }
 
-    suspend fun getContactList() =
-        withContext(coroutineScope.coroutineContext) {
-             delay(2_000)
-             contactList
+    fun getContactList(): List<Contact> {
+            Thread.sleep(2_000)
+             return contactList
     }
 
-    suspend fun getContactById(contactId: String) =
-         withContext(coroutineScope.coroutineContext) {
-             delay(2_000)
-             contactList.last { it.id == contactId }
+    fun getContactById(contactId: String): Contact {
+             Thread.sleep(2_000)
+             return contactList.last { it.id == contactId }
     }
 }

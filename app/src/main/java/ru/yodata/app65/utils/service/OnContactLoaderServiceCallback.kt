@@ -1,6 +1,5 @@
-package ru.yodata.app65.service
+package ru.yodata.app65.utils.service
 
-import kotlinx.coroutines.CoroutineScope
 import ru.yodata.app65.model.Contact
 
 interface OnContactLoaderServiceCallback {
