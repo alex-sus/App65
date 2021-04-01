@@ -13,27 +13,8 @@ object Constants {
     const val ALARM_SECOND_SHIFT = 50 // Для отладки: сдвиг от текущего времени в секундах
     const val CHANNEL_ID = "ru.yodata.app65" // id канала нотификаций
     const val ANDROID_RESOURCE = "android.resource://"
+    const val SHOW_EMPTY_VALUE = "-"
     lateinit var notificationSound: Uri // звук нотификации
-
-    val contactList: List<Contact> = listOf(Contact(
-            id = "1",
-            name = "Суслопаров Алексей Владимирович",
-            birthday = Calendar.getInstance().apply {
-                set(Calendar.DAY_OF_MONTH, 1)
-                set(Calendar.MONTH, 0)
-                set(Calendar.YEAR, 1900)
-            },
-            phone1 = "+7-909-111-22-33",
-            phone2 = "(3412)77-88-99",
-            email1 = "one@gmail.com",
-            email2 = "two@gmail.com",
-            description = "Стиль — это один или несколько сгруппированных атрибутов " +
-                "форматирования, которые отвечают за внешний вид и поведение элементов или окна. " +
-                "Стиль может задавать такие свойства, как ширину, отступы, цвет текста, " +
-                "размер шрифта, цвет фона и так далее.",
-            photo = ""
-        )
-    )
 
     // Время, в которое будет стартовать напоминание о дне рождения.
     // Время автоматически задается текущее плюс количество секунд в ALARM_SECOND_SHIFT
