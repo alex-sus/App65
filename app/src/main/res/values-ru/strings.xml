@@ -22,4 +22,10 @@
     <string name="notification_channel_description">Напоминания о днях рождения</string>
     <string name="notification_title">Не забудьте поздравить!</string>
     <string name="notification_let_see_msg">Посмотрите напоминание!</string>
+    <string name="permissions_request_introduction_title">Требуются разрешения</string>
+    <string name="permissions_request_introduction_msg">Сейчас будут запрошены разрешения, без которых приложение не сможет работать. Просим подтвердить все запрашиваемые разрешения.</string>
+    <string name="permissions_request_epilogue_title">Требуются разрешения</string>
+    <string name="permissions_request_epilogue_msg">Пожалуйста примите все запрошенные разрешения. Без них работа приложения невозможна.</string>
+    <string name="permissions_request_epilogue_ok_btn">Предоставить разрешения</string>
+    <string name="permissions_request_epilogue_cancel_btn">Нет, выйти из приложения</string>
 </resources>

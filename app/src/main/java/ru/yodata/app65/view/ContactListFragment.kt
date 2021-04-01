@@ -1,5 +1,6 @@
 package ru.yodata.app65.view
 
+import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
 import ru.yodata.app65.R
 import ru.yodata.app65.databinding.FragmentContactListBinding
+import ru.yodata.app65.model.BriefContact
 import ru.yodata.app65.model.Contact
 import ru.yodata.app65.utils.service.OnContactLoaderServiceCallback
 import ru.yodata.app65.utils.Constants.TAG
@@ -17,10 +19,10 @@ class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
 
     private var listFrag: FragmentContactListBinding? = null
 
-    private var contactId: String = "1"
     private var navigateCallback: OnContactListCallback? = null
     private var loaderCallback: OnContactLoaderServiceCallback? = null
     private lateinit var coroutineScope: CoroutineScope
+    private val contResolver: ContentResolver by lazy { requireContext().contentResolver }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -43,10 +45,12 @@ class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
         loaderCallback?.run {
             coroutineScope.launch {
                 while (!isServiceBound()) {}
-                val curContact = getContactList()[0]
+                val curContact = getContactList(contResolver)[0]
                 try {
                     requireActivity().runOnUiThread {
                         showContactBrief(curContact)
+                        view.setOnClickListener {
+                            navigateCallback?.navigateToContactDetailsFragment(curContact.id) }
                     }
                 }
                 catch (e: IllegalStateException) {
@@ -55,14 +59,13 @@ class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
                 }
             }
         }
-        view.setOnClickListener { navigateCallback?.navigateToContactDetailsFragment(contactId) }
     }
 
-    private fun showContactBrief(curContact: Contact) {
+    private fun showContactBrief(curContact: BriefContact) {
         with(curContact) {
             listFrag?.apply {
                 nameTv.text = name
-                phoneTv.text = phone1
+                phoneTv.text = phone
             }
         }
     }

@@ -1,13 +1,15 @@
 package ru.yodata.app65.utils.service
 
+import android.content.ContentResolver
+import ru.yodata.app65.model.BriefContact
 import ru.yodata.app65.model.Contact
 
 interface OnContactLoaderServiceCallback {
 
     fun isServiceBound(): Boolean
 
-    suspend fun getContactList(): List<Contact>
+    fun getContactList(contResolver: ContentResolver): List<BriefContact>
 
-    suspend fun getContactById(contactId: String): Contact
+    fun getContactById(contResolver: ContentResolver, contactId: String): Contact
 
 }
