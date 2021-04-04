@@ -1,73 +1,106 @@
 package ru.yodata.app65.view
 
-import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.*
+import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat.getDrawable
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import ru.yodata.app65.R
 import ru.yodata.app65.databinding.FragmentContactListBinding
-import ru.yodata.app65.model.BriefContact
-import ru.yodata.app65.model.Contact
-import ru.yodata.app65.utils.service.OnContactLoaderServiceCallback
 import ru.yodata.app65.utils.Constants.TAG
+import ru.yodata.app65.viewmodel.ContactListViewModel
 
 class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
 
     private var listFrag: FragmentContactListBinding? = null
-
+    val contactListViewModel: ContactListViewModel by viewModels()
     private var navigateCallback: OnContactListCallback? = null
-    private var loaderCallback: OnContactLoaderServiceCallback? = null
-    private lateinit var coroutineScope: CoroutineScope
-    private val contResolver: ContentResolver by lazy { requireContext().contentResolver }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnContactListCallback) {
             navigateCallback = context
-        } else throw ClassCastException(context.toString() +
-                                        " must implement OnContactListCallback!")
-        if (context is OnContactLoaderServiceCallback) {
-            loaderCallback = context
-        } else throw ClassCastException(context.toString() +
-                " must implement OnContactLoaderServiceCallback!")
-        coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        } else throw ClassCastException(
+            context.toString() +
+                    " must implement OnContactListCallback!"
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         listFrag = FragmentContactListBinding.bind(view)
         (activity as AppCompatActivity).supportActionBar?.title =
-                                                getString(R.string.contact_list_fragment_title)
-        loaderCallback?.run {
-            coroutineScope.launch {
-                while (!isServiceBound()) {}
-                val curContact = getContactList(contResolver)[0]
+                getString(R.string.contact_list_fragment_title)
+        setHasOptionsMenu(true)
+        val contactListAdapter = ContactListAdapter { contactId ->
+            navigateCallback?.navigateToContactDetailsFragment(contactId)
+        }
+        listFrag?.contactsRecyclerView?.apply {
+            adapter = contactListAdapter
+            layoutManager = LinearLayoutManager(context)
+            itemAnimator = null
+        }
+        val divider = getDrawable(requireContext(), R.drawable.divider14)
+        if (divider != null) {
+            listFrag?.contactsRecyclerView?.addItemDecoration(ContactItemDecoration(divider))
+        }
+        contactListViewModel.getFilteredContactList().observe(viewLifecycleOwner, { contactList ->
+            listFrag?.progressBar?.visibility = View.GONE
+            if (!contactList.isNullOrEmpty()) {
+                Log.d(TAG, "ContactListFragment обзервер сработал")
                 try {
-                    requireActivity().runOnUiThread {
-                        showContactBrief(curContact)
-                        view.setOnClickListener {
-                            navigateCallback?.navigateToContactDetailsFragment(curContact.id) }
-                    }
-                }
-                catch (e: IllegalStateException) {
-                    Log.d(TAG,"Исключение в ContactListFragment: ")
+                    contactListAdapter.submitList(contactList)
+                } catch (e: IllegalStateException) {
+                    Log.d(
+                            TAG,
+                            "Исключение IllegalStateException в ${this::class.java.simpleName}:" +
+                                    "${object {}.javaClass.enclosingMethod.name}"
+                    )
                     Log.d(TAG, e.stackTraceToString())
                 }
-            }
-        }
+            } else
+                Toast.makeText(
+                        context,
+                        getString(R.string.contacts_not_found_msg),
+                        Toast.LENGTH_LONG
+                ).show()
+        })
     }
 
-    private fun showContactBrief(curContact: BriefContact) {
-        with(curContact) {
-            listFrag?.apply {
-                nameTv.text = name
-                phoneTv.text = phone
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.options_menu, menu)
+        val searchItem = menu.findItem(R.id.searchView)
+        val searchView = searchItem.actionView as SearchView
+        // Восстановить значение в поисковой строке, которое автоматически сбрасывается при
+        // повороте экрана или переходе на другой фрагмент
+        val savedFilter = contactListViewModel.currentFilterValue
+        if (!savedFilter.isNullOrBlank()) {
+            searchView.run {
+                setQuery(savedFilter, false)
+                isIconified = false
             }
         }
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                searchItem.collapseActionView()
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                contactListViewModel.setNameFilter(newText ?: "")
+                return true
+            }
+        })
     }
 
     override fun onDestroyView() {
@@ -77,9 +110,6 @@ class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
 
     override fun onDetach() {
         navigateCallback = null
-        loaderCallback = null
-        // Убить все долгие работы по загрузке данных, даже если они еще продолжаются
-        coroutineScope.cancel()
         super.onDetach()
     }
 }

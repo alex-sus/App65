@@ -5,14 +5,11 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.provider.ContactsContract
 import android.util.Log
 import kotlinx.coroutines.*
 import ru.yodata.app65.model.BriefContact
 import ru.yodata.app65.model.Contact
-import ru.yodata.app65.model.ContactDataSource
-import ru.yodata.app65.utils.Constants
-import ru.yodata.app65.utils.Constants.SHOW_EMPTY_VALUE
+import ru.yodata.app65.model.ContactRepository
 import ru.yodata.app65.utils.Constants.TAG
 import java.util.*
 
@@ -26,15 +23,19 @@ class ContactLoaderService : Service() {
 
     override fun onBind(intent: Intent): IBinder {
         Log.d(TAG, "Bind произошел сейчас:")
-        Log.d(TAG, "Старт метода: ${this::class.java.simpleName}:" +
-                "${object {}.javaClass.getEnclosingMethod().getName()}")
+        Log.d(
+            TAG, "Старт метода: ${this::class.java.simpleName}:" +
+                    "${object {}.javaClass.enclosingMethod.name}"
+        )
         return binder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
         Log.d(TAG, "На самом деле Unbind произошел только сейчас:")
-        Log.d(TAG, "Старт метода: ${this::class.java.simpleName}:" +
-                "${object {}.javaClass.getEnclosingMethod().getName()}")
+        Log.d(
+            TAG, "Старт метода: ${this::class.java.simpleName}:" +
+                    "${object {}.javaClass.enclosingMethod.name}"
+        )
         return super.onUnbind(intent)
     }
 
@@ -43,9 +44,9 @@ class ContactLoaderService : Service() {
         super.onDestroy()
     }
 
-    fun getContactList(contResolver: ContentResolver): List<BriefContact> =
-            ContactDataSource.getContactList(contResolver)
+    suspend fun getContactList(contResolver: ContentResolver): List<BriefContact> =
+            ContactRepository.getContactList(contResolver)
 
     fun getContactById(contResolver: ContentResolver, contactId: String): Contact =
-            ContactDataSource.getContactById(contResolver, contactId)
+        ContactRepository.getContactById(contResolver, contactId)
 }
