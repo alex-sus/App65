@@ -8,4 +8,5 @@
     <dimen name="small_vertical_gap">8dp</dimen>
     <dimen name="normal_vertical_gap">16dp</dimen>
     <dimen name="divider_thickness">1dp</dimen>
+    <dimen name="recycler_view_gap">4dp</dimen>
 </resources>

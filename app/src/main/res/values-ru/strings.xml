@@ -28,4 +28,6 @@
     <string name="permissions_request_epilogue_msg">Пожалуйста примите все запрошенные разрешения. Без них работа приложения невозможна.</string>
     <string name="permissions_request_epilogue_ok_btn">Предоставить разрешения</string>
     <string name="permissions_request_epilogue_cancel_btn">Нет, выйти из приложения</string>
+    <string name="search_view_title">Поиск</string>
+    <string name="contacts_not_found_msg">Контактов не найдено</string>
 </resources>

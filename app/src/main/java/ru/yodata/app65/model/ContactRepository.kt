@@ -3,11 +3,11 @@ package ru.yodata.app65.model
 import android.content.ContentResolver
 import android.provider.ContactsContract
 import android.util.Log
-import ru.yodata.app65.utils.Constants.SHOW_EMPTY_VALUE
+import ru.yodata.app65.utils.Constants.EMPTY_VALUE
 import ru.yodata.app65.utils.Constants.TAG
 import java.util.*
 
-object ContactDataSource {
+object ContactRepository {
 
     private const val CUR_CONTACT_PHONE_SELECTION = "${ContactsContract.Data.MIMETYPE} = " +
             "'${ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE}'" +
@@ -35,8 +35,10 @@ object ContactDataSource {
 
     fun getContactList(contResolver: ContentResolver): List<BriefContact> {
         val briefContactList = mutableListOf<BriefContact>()
-        Log.d(TAG, "Старт метода: ${this::class.java.simpleName}:" +
-                "${object {}.javaClass.getEnclosingMethod().getName()}")
+        Log.d(
+            TAG, "Старт метода: ${this::class.java.simpleName}:" +
+                    "${object {}.javaClass.enclosingMethod.name}"
+        )
         contResolver.query(
                 ContactsContract.Contacts.CONTENT_URI,
                 BRIEF_CONTACTS_PROJECTION,
@@ -47,11 +49,14 @@ object ContactDataSource {
             Log.d(TAG, "Создаю список контактов")
             if (cursor.moveToFirst()) {
                 do {
-                    briefContactList.add(BriefContact(
+                    briefContactList.add(
+                        BriefContact(
                             id = cursor.getString(CURSOR_LOOKUP_KEY_COLUMN),
                             name = cursor.getString(CURSOR_DISPLAY_NAME_COLUMN),
-                            phone = SHOW_EMPTY_VALUE
-                    ))
+                            phone = EMPTY_VALUE
+                        )
+                    )
+                    Log.d(TAG, "Контакт: ${cursor.getString(CURSOR_DISPLAY_NAME_COLUMN)}")
                 } while (cursor.moveToNext())
             }
             // Номера телефонов у контактов находятся в другой таблице (ContactsContract.Data) -
@@ -79,11 +84,11 @@ object ContactDataSource {
     }
 
     fun getContactById(contResolver: ContentResolver, contactId: String): Contact {
-        var name = SHOW_EMPTY_VALUE
+        var name = EMPTY_VALUE
         var birthday: Calendar? = null
         val phones = mutableListOf<String>()
         val emails = mutableListOf<String>()
-        var description = SHOW_EMPTY_VALUE
+        var description = EMPTY_VALUE
         contResolver.query(
                 ContactsContract.Data.CONTENT_URI,
                 DETAIL_PROJECTION,
@@ -98,7 +103,7 @@ object ContactDataSource {
                             cursor.getString(CURSOR_MIMETYPE_COLUMN))
                     when (cursor.getString(CURSOR_MIMETYPE_COLUMN)) {
                         ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE -> {
-                            name = cursor.getString(CURSOR_MAIN_VALUE_COLUMN)
+                            name = cursor.getString(CURSOR_MAIN_VALUE_COLUMN) ?: EMPTY_VALUE
                         }
                         ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE -> {
                             if (cursor.getInt(CURSOR_ADDITIONAL_VALUE_COLUMN) ==
@@ -115,14 +120,20 @@ object ContactDataSource {
                             }
                         }
                         ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE -> {
-                            phones.add(cursor.getString(CURSOR_MAIN_VALUE_COLUMN))
+                            phones.add(
+                                cursor.getString(CURSOR_MAIN_VALUE_COLUMN)
+                                    ?: EMPTY_VALUE
+                            )
                         }
                         ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE -> {
-                            emails.add(cursor.getString(CURSOR_MAIN_VALUE_COLUMN))
+                            emails.add(
+                                cursor.getString(CURSOR_MAIN_VALUE_COLUMN)
+                                    ?: EMPTY_VALUE
+                            )
                         }
                         ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE -> {
                             description = cursor.getString(CURSOR_MAIN_VALUE_COLUMN)
-                                    ?: SHOW_EMPTY_VALUE
+                                ?: EMPTY_VALUE
                         }
                     }
                 } while (cursor.moveToNext())
@@ -130,14 +141,14 @@ object ContactDataSource {
             }
         }
         return Contact(
-                id = contactId,
-                name = name,
-                birthday = birthday,
-                phone1 = phones.getOrNull(0) ?: SHOW_EMPTY_VALUE,
-                phone2 = phones.getOrNull(1) ?: SHOW_EMPTY_VALUE,
-                email1 = emails.getOrNull(0) ?: SHOW_EMPTY_VALUE,
-                email2 = emails.getOrNull(1) ?: SHOW_EMPTY_VALUE,
-                description = description
+            id = contactId,
+            name = name,
+            birthday = birthday,
+            phone1 = phones.getOrNull(0) ?: EMPTY_VALUE,
+            phone2 = phones.getOrNull(1) ?: EMPTY_VALUE,
+            email1 = emails.getOrNull(0) ?: EMPTY_VALUE,
+            email2 = emails.getOrNull(1) ?: EMPTY_VALUE,
+            description = description
         )
     }
 }
