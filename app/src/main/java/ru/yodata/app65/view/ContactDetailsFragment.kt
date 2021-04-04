@@ -11,15 +11,17 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
 import kotlinx.coroutines.*
 import ru.yodata.app65.R
 import ru.yodata.app65.databinding.FragmentContactDetailsBinding
 import ru.yodata.app65.model.Contact
-import ru.yodata.app65.utils.service.OnContactLoaderServiceCallback
+//import ru.yodata.app65.utils.service.OnContactLoaderServiceCallback
 import ru.yodata.app65.utils.Constants
 import ru.yodata.app65.utils.Constants.SHOW_EMPTY_VALUE
 import ru.yodata.app65.utils.Constants.TAG
 import ru.yodata.app65.utils.alarmbroadcast.BirthdayAlarmReceiver
+import ru.yodata.app65.viewmodel.ContactDetailViewModel
 import java.util.*
 
 private const val DAY_OF_MONTH_29 = 29
@@ -28,20 +30,8 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
     private var detailsFrag: FragmentContactDetailsBinding? = null
 
     private val alarmHelper = BirthdayAlarmManagerHelper()
-    private var loaderCallback: OnContactLoaderServiceCallback? = null
-    private lateinit var coroutineScope: CoroutineScope
     private val contactId: String by lazy {
         requireArguments().getString(CONTACT_ID, "")
-    }
-    private val contResolver: ContentResolver by lazy { requireContext().contentResolver }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnContactLoaderServiceCallback) {
-            loaderCallback = context
-        } else throw ClassCastException(context.toString() +
-                " must implement OnContactLoaderServiceCallback!")
-        coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,25 +39,21 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
         detailsFrag = FragmentContactDetailsBinding.bind(view)
         (activity as AppCompatActivity).supportActionBar?.title =
                 getString(R.string.contact_details_fragment_title)
-        loaderCallback?.run {
-            coroutineScope.launch {
-                while (!isServiceBound()) {}
-                val curContact = getContactById(contResolver, contactId)
+        val contactDetailViewModel: ContactDetailViewModel by viewModels()
+        contactDetailViewModel.getContactById(contactId).observe(viewLifecycleOwner, { curContact ->
+            if (curContact != null) {
                 try {
-                    requireActivity().runOnUiThread {
-                        showContactDetails(curContact)
-                        detailsFrag?.remindBtn?.setOnCheckedChangeListener { buttonView, isChecked ->
-                            if (isChecked) alarmHelper.setBirthdayAlarm(curContact)
-                            else alarmHelper.cancelBirthdayAlarm(curContact)
-                        }
+                    showContactDetails(curContact)
+                    detailsFrag?.remindBtn?.setOnCheckedChangeListener { buttonView, isChecked ->
+                        if (isChecked) alarmHelper.setBirthdayAlarm(curContact)
+                        else alarmHelper.cancelBirthdayAlarm(curContact)
                     }
-                }
-                catch (e: IllegalStateException) {
-                    Log.d(TAG,"Исключение в ContactDetailsFragment: ")
+                } catch (e: IllegalStateException) {
+                    Log.d(TAG, "Исключение в ContactDetailsFragment: ")
                     Log.d(TAG, e.stackTraceToString())
                 }
             }
-        }
+        })
     }
 
     private fun showContactDetails(curContact: Contact) {
@@ -95,15 +81,6 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
     override fun onDestroyView() {
         detailsFrag = null
         super.onDestroyView()
-    }
-
-    override fun onDetach() {
-        Log.d(Constants.TAG,"Старт метода: ${this::class.java.simpleName}:" +
-                "${object {}.javaClass.getEnclosingMethod().getName()}")
-        loaderCallback = null
-        // Убить все долгие работы по загрузке данных, даже если они еще продолжаются
-        coroutineScope.cancel()
-        super.onDetach()
     }
 
     companion object {
@@ -171,7 +148,7 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
                         alarmPeriodMs,
                         alarmPendingIntent
                 )
-                Log.d(Constants.TAG, "Аларм установлен на ${alarmStartMoment.toString()}")
+                Log.d(TAG, "Аларм установлен на ${alarmStartMoment.toString()}")
                 Toast.makeText(
                         context,
                         getString(R.string.set_alarm_msg),

@@ -5,14 +5,11 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.provider.ContactsContract
 import android.util.Log
 import kotlinx.coroutines.*
 import ru.yodata.app65.model.BriefContact
 import ru.yodata.app65.model.Contact
-import ru.yodata.app65.model.ContactDataSource
-import ru.yodata.app65.utils.Constants
-import ru.yodata.app65.utils.Constants.SHOW_EMPTY_VALUE
+import ru.yodata.app65.model.ContactRepository
 import ru.yodata.app65.utils.Constants.TAG
 import java.util.*
 
@@ -44,8 +41,8 @@ class ContactLoaderService : Service() {
     }
 
     fun getContactList(contResolver: ContentResolver): List<BriefContact> =
-            ContactDataSource.getContactList(contResolver)
+            ContactRepository.getContactList(contResolver)
 
     fun getContactById(contResolver: ContentResolver, contactId: String): Contact =
-            ContactDataSource.getContactById(contResolver, contactId)
+            ContactRepository.getContactById(contResolver, contactId)
 }

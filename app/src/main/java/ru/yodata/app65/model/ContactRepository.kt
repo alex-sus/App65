@@ -7,7 +7,7 @@ import ru.yodata.app65.utils.Constants.SHOW_EMPTY_VALUE
 import ru.yodata.app65.utils.Constants.TAG
 import java.util.*
 
-object ContactDataSource {
+object ContactRepository {
 
     private const val CUR_CONTACT_PHONE_SELECTION = "${ContactsContract.Data.MIMETYPE} = " +
             "'${ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE}'" +
@@ -52,6 +52,7 @@ object ContactDataSource {
                             name = cursor.getString(CURSOR_DISPLAY_NAME_COLUMN),
                             phone = SHOW_EMPTY_VALUE
                     ))
+                    Log.d(TAG, "Контакт: ${cursor.getString(CURSOR_DISPLAY_NAME_COLUMN)}")
                 } while (cursor.moveToNext())
             }
             // Номера телефонов у контактов находятся в другой таблице (ContactsContract.Data) -
