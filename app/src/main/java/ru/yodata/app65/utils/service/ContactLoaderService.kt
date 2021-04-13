@@ -23,15 +23,19 @@ class ContactLoaderService : Service() {
 
     override fun onBind(intent: Intent): IBinder {
         Log.d(TAG, "Bind произошел сейчас:")
-        Log.d(TAG, "Старт метода: ${this::class.java.simpleName}:" +
-                "${object {}.javaClass.getEnclosingMethod().getName()}")
+        Log.d(
+            TAG, "Старт метода: ${this::class.java.simpleName}:" +
+                    "${object {}.javaClass.enclosingMethod.name}"
+        )
         return binder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
         Log.d(TAG, "На самом деле Unbind произошел только сейчас:")
-        Log.d(TAG, "Старт метода: ${this::class.java.simpleName}:" +
-                "${object {}.javaClass.getEnclosingMethod().getName()}")
+        Log.d(
+            TAG, "Старт метода: ${this::class.java.simpleName}:" +
+                    "${object {}.javaClass.enclosingMethod.name}"
+        )
         return super.onUnbind(intent)
     }
 
@@ -41,8 +45,8 @@ class ContactLoaderService : Service() {
     }
 
     fun getContactList(contResolver: ContentResolver): List<BriefContact> =
-            ContactRepository.getContactList(contResolver)
+        ContactRepository.getContactList(contResolver)
 
     fun getContactById(contResolver: ContentResolver, contactId: String): Contact =
-            ContactRepository.getContactById(contResolver, contactId)
+        ContactRepository.getContactById(contResolver, contactId)
 }

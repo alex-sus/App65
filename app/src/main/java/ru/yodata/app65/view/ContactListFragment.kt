@@ -3,61 +3,94 @@ package ru.yodata.app65.view
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat.getDrawable
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import kotlinx.coroutines.*
+import androidx.recyclerview.widget.LinearLayoutManager
 import ru.yodata.app65.R
 import ru.yodata.app65.databinding.FragmentContactListBinding
-import ru.yodata.app65.model.BriefContact
 import ru.yodata.app65.utils.Constants.TAG
 import ru.yodata.app65.viewmodel.ContactListViewModel
 
 class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
 
     private var listFrag: FragmentContactListBinding? = null
-
+    val contactListViewModel: ContactListViewModel by viewModels()
     private var navigateCallback: OnContactListCallback? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnContactListCallback) {
             navigateCallback = context
-        } else throw ClassCastException(context.toString() +
-                                        " must implement OnContactListCallback!")
+        } else throw ClassCastException(
+            context.toString() +
+                    " must implement OnContactListCallback!"
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         listFrag = FragmentContactListBinding.bind(view)
         (activity as AppCompatActivity).supportActionBar?.title =
-                                                getString(R.string.contact_list_fragment_title)
-        val contactListViewModel: ContactListViewModel by viewModels()
-        contactListViewModel.getContactList().observe(viewLifecycleOwner, { contactList ->
-            Log.d(TAG, "ContactListFragment обзервер сработал")
+                getString(R.string.contact_list_fragment_title)
+        setHasOptionsMenu(true)
+        val contactListAdapter = ContactListAdapter { contactId ->
+            navigateCallback?.navigateToContactDetailsFragment(contactId)
+        }
+        listFrag?.contactsRecyclerView?.apply {
+            adapter = contactListAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+        val divider = getDrawable(requireContext(), R.drawable.divider14)
+        if (divider != null) {
+            listFrag?.contactsRecyclerView?.addItemDecoration(ContactItemDecoration(divider))
+        }
+        contactListViewModel.getFilteredContactList().observe(viewLifecycleOwner, { contactList ->
+            listFrag?.progressBar?.visibility = View.GONE
             if (!contactList.isNullOrEmpty()) {
-                val curContact = contactList[0] // <- Это временно, пока нет Recycler View
+                Log.d(TAG, "ContactListFragment обзервер сработал")
                 try {
-                    showContactBrief(curContact)
-                    view.setOnClickListener {
-                        navigateCallback?.navigateToContactDetailsFragment(curContact.id)
-                    }
+                    contactListAdapter.submitList(contactList)
                 } catch (e: IllegalStateException) {
-                    Log.d(TAG, "Исключение в ContactListFragment: ")
+                    Log.d(
+                            TAG,
+                            "Исключение IllegalStateException в ${this::class.java.simpleName}:" +
+                                    "${object {}.javaClass.enclosingMethod.name}"
+                    )
                     Log.d(TAG, e.stackTraceToString())
                 }
-            }
+            } else
+                Toast.makeText(
+                        context,
+                        getString(R.string.contacts_not_found_msg),
+                        Toast.LENGTH_LONG
+                ).show()
         })
     }
 
-    private fun showContactBrief(curContact: BriefContact) {
-        with(curContact) {
-            listFrag?.apply {
-                nameTv.text = name
-                phoneTv.text = phone
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.options_menu, menu)
+        val searchItem = menu.findItem(R.id.searchView)
+        val searchView = searchItem.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                searchItem.collapseActionView()
+                return true
             }
-        }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                contactListViewModel.setNameFilter(newText ?: "")
+                return true
+            }
+        })
     }
 
     override fun onDestroyView() {

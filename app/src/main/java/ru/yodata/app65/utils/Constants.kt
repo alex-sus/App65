@@ -1,9 +1,7 @@
 package ru.yodata.app65.utils
 
 import android.net.Uri
-import ru.yodata.app65.model.Contact
 import java.util.*
-import kotlin.time.hours
 
 object Constants {
 
@@ -13,7 +11,7 @@ object Constants {
     const val ALARM_SECOND_SHIFT = 50 // Для отладки: сдвиг от текущего времени в секундах
     const val CHANNEL_ID = "ru.yodata.app65" // id канала нотификаций
     const val ANDROID_RESOURCE = "android.resource://"
-    const val SHOW_EMPTY_VALUE = "-"
+    const val EMPTY_VALUE = "-"
     lateinit var notificationSound: Uri // звук нотификации
 
     // Время, в которое будет стартовать напоминание о дне рождения.

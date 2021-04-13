@@ -5,10 +5,17 @@ import android.content.*
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import androidx.appcompat.widget.SearchView
 import ru.yodata.app65.R
+import ru.yodata.app65.utils.Constants
 //import ru.yodata.app65.utils.service.ContactLoaderService
 //import ru.yodata.app65.utils.service.OnContactLoaderServiceCallback
 import ru.yodata.app65.utils.Constants.CONTACT_ID
+import ru.yodata.app65.utils.Constants.TAG
 import ru.yodata.app65.utils.PermissionsAccessHelper.isPermissionsRequestSuccessful
 import ru.yodata.app65.utils.PermissionsAccessHelper.startPermissionsRequest
 

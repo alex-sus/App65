@@ -1,24 +1,22 @@
 package ru.yodata.app65.view
 
+//import ru.yodata.app65.utils.service.OnContactLoaderServiceCallback
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import kotlinx.coroutines.*
 import ru.yodata.app65.R
 import ru.yodata.app65.databinding.FragmentContactDetailsBinding
 import ru.yodata.app65.model.Contact
-//import ru.yodata.app65.utils.service.OnContactLoaderServiceCallback
 import ru.yodata.app65.utils.Constants
-import ru.yodata.app65.utils.Constants.SHOW_EMPTY_VALUE
+import ru.yodata.app65.utils.Constants.EMPTY_VALUE
 import ru.yodata.app65.utils.Constants.TAG
 import ru.yodata.app65.utils.alarmbroadcast.BirthdayAlarmReceiver
 import ru.yodata.app65.viewmodel.ContactDetailViewModel
@@ -62,8 +60,12 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
                 fullNameTv.text = name
                 birthdayTv.text = if (birthday != null)
                     birthday.get(Calendar.DAY_OF_MONTH).toString() + " " +
-                    birthday.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())
-                else SHOW_EMPTY_VALUE
+                            birthday.getDisplayName(
+                                Calendar.MONTH,
+                                Calendar.LONG,
+                                Locale.getDefault()
+                            )
+                else EMPTY_VALUE
                 phone1Tv.text = phone1
                 phone2Tv.text = phone2
                 email1Tv.text = email1
@@ -143,16 +145,16 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
                     }
                 }
                 alarmManager.setInexactRepeating(
-                        AlarmManager.RTC_WAKEUP,
-                        alarmStartMoment.timeInMillis,
-                        alarmPeriodMs,
-                        alarmPendingIntent
+                    AlarmManager.RTC_WAKEUP,
+                    alarmStartMoment.timeInMillis,
+                    alarmPeriodMs,
+                    alarmPendingIntent
                 )
-                Log.d(TAG, "Аларм установлен на ${alarmStartMoment.toString()}")
+                Log.d(TAG, "Аларм установлен на $alarmStartMoment")
                 Toast.makeText(
-                        context,
-                        getString(R.string.set_alarm_msg),
-                        Toast.LENGTH_LONG
+                    context,
+                    getString(R.string.set_alarm_msg),
+                    Toast.LENGTH_LONG
                 ).show()
             }
         }
