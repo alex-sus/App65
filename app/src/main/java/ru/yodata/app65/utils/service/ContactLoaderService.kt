@@ -44,8 +44,8 @@ class ContactLoaderService : Service() {
         super.onDestroy()
     }
 
-    fun getContactList(contResolver: ContentResolver): List<BriefContact> =
-        ContactRepository.getContactList(contResolver)
+    suspend fun getContactList(contResolver: ContentResolver): List<BriefContact> =
+            ContactRepository.getContactList(contResolver)
 
     fun getContactById(contResolver: ContentResolver, contactId: String): Contact =
         ContactRepository.getContactById(contResolver, contactId)

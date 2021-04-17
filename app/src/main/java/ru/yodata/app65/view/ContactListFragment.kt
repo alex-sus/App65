@@ -46,6 +46,7 @@ class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
         listFrag?.contactsRecyclerView?.apply {
             adapter = contactListAdapter
             layoutManager = LinearLayoutManager(context)
+            itemAnimator = null
         }
         val divider = getDrawable(requireContext(), R.drawable.divider14)
         if (divider != null) {
@@ -79,6 +80,15 @@ class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
         inflater.inflate(R.menu.options_menu, menu)
         val searchItem = menu.findItem(R.id.searchView)
         val searchView = searchItem.actionView as SearchView
+        // Восстановить значение в поисковой строке, которое автоматически сбрасывается при
+        // повороте экрана или переходе на другой фрагмент
+        val savedFilter = contactListViewModel.currentFilterValue
+        if (!savedFilter.isNullOrBlank()) {
+            searchView.run {
+                setQuery(savedFilter, false)
+                isIconified = false
+            }
+        }
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
             override fun onQueryTextSubmit(query: String?): Boolean {

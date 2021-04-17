@@ -15,6 +15,7 @@ class ContactDetailViewModel(application: Application) : AndroidViewModel(applic
         if (id != contact.value?.id) {
             loadContactDetail(id)
         }
+        
         return contact
     }
 

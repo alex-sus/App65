@@ -17,8 +17,8 @@ class ContactListViewModel(application: Application) : AndroidViewModel(applicat
     private val contResolver = application.contentResolver
     private lateinit var contactList: List<BriefContact> // полный список контактов
     private val filteredList =
-        MutableLiveData<List<BriefContact>>() // фильтрованный список контактов
-    private var currentFilterValue = " " // фильтр имен, соответствующий filteredList
+            MutableLiveData<List<BriefContact>>() // фильтрованный список контактов
+    var currentFilterValue = " " // фильтр имен, соответствующий filteredList
 
     init {
         loadContactList()
