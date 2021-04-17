@@ -2,9 +2,11 @@ package ru.yodata.app65.view
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import ru.yodata.app65.R
 import ru.yodata.app65.databinding.ContactListRowBinding
 import ru.yodata.app65.model.BriefContact
 
@@ -33,6 +35,11 @@ class ContactListAdapter(
         fun bind(item: BriefContact) = with(contactRow) {
             nameTv.text = item.name
             phoneTv.text = item.phone
+            if (!item.photoUri.isNullOrEmpty()) {
+                photoIv.setImageURI(item.photoUri.toUri())
+            } else {
+                photoIv.setImageResource(R.drawable.programmer2_70)
+            }
             itemView.setOnClickListener {
                 if (adapterPosition != RecyclerView.NO_POSITION) navigateTo(item.id)
             }

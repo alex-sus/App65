@@ -9,4 +9,7 @@
     <dimen name="normal_vertical_gap">16dp</dimen>
     <dimen name="divider_thickness">1dp</dimen>
     <dimen name="recycler_view_gap">4dp</dimen>
+    <dimen name="big_photo_size">150dp</dimen>
+    <dimen name="small_photo_size">70dp</dimen>
+    <dimen name="very_small_vertical_gap">4dp</dimen>
 </resources>

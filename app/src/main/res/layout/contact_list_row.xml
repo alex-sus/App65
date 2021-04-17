@@ -11,10 +11,10 @@
 
     <ImageView
         android:id="@+id/photoIv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/small_photo_size"
+        android:layout_height="@dimen/small_photo_size"
         android:contentDescription="@string/photo"
-        android:src="@drawable/programmer2_100"
+        android:src="@drawable/programmer2_70"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,7 +24,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/normal_horizontal_gap"
-        android:layout_marginTop="@dimen/small_vertical_gap"
+        android:layout_marginTop="@dimen/very_small_vertical_gap"
         android:singleLine="false"
         android:text="@string/loading_msg"
         app:layout_constraintEnd_toEndOf="parent"

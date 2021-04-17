@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import ru.yodata.app65.R
@@ -61,9 +62,9 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
                 birthdayTv.text = if (birthday != null)
                     birthday.get(Calendar.DAY_OF_MONTH).toString() + " " +
                             birthday.getDisplayName(
-                                Calendar.MONTH,
-                                Calendar.LONG,
-                                Locale.getDefault()
+                                    Calendar.MONTH,
+                                    Calendar.LONG,
+                                    Locale.getDefault()
                             )
                 else EMPTY_VALUE
                 phone1Tv.text = phone1
@@ -71,10 +72,14 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
                 email1Tv.text = email1
                 email2Tv.text = email2
                 descriptionTv.text = description
+                if (!bigPhotoUri.isNullOrEmpty()) {
+                    bigPhotoIv.setImageURI(bigPhotoUri.toUri())
+                } else {
+                    bigPhotoIv.setImageResource(R.drawable.programmer2_150)
+                }
                 remindBtn.isChecked = if (birthday != null) {
                     alarmHelper.isBirthdayAlarmOn(curContact)
-                }
-                else false
+                } else false
                 remindBtn.visibility = if (birthday != null) View.VISIBLE else View.GONE
             }
         }

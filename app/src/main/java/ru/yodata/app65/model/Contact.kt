@@ -11,4 +11,5 @@ data class Contact(
         val email1: String,
         val email2: String,
         val description: String,
+        val bigPhotoUri: String?
 )
