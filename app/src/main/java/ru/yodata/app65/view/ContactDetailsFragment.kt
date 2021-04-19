@@ -1,6 +1,5 @@
 package ru.yodata.app65.view
 
-//import ru.yodata.app65.utils.service.OnContactLoaderServiceCallback
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context

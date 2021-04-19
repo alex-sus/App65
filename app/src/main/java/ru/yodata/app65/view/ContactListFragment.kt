@@ -53,25 +53,31 @@ class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
             listFrag?.contactsRecyclerView?.addItemDecoration(ContactItemDecoration(divider))
         }
         contactListViewModel.getFilteredContactList().observe(viewLifecycleOwner, { contactList ->
-            listFrag?.progressBar?.visibility = View.GONE
             if (!contactList.isNullOrEmpty()) {
                 Log.d(TAG, "ContactListFragment обзервер сработал")
                 try {
                     contactListAdapter.submitList(contactList)
                 } catch (e: IllegalStateException) {
                     Log.d(
-                            TAG,
-                            "Исключение IllegalStateException в ${this::class.java.simpleName}:" +
-                                    "${object {}.javaClass.enclosingMethod.name}"
+                        TAG,
+                        "Исключение IllegalStateException в ${this::class.java.simpleName}:" +
+                                "${object {}.javaClass.enclosingMethod.name}"
                     )
                     Log.d(TAG, e.stackTraceToString())
                 }
             } else
                 Toast.makeText(
-                        context,
-                        getString(R.string.contacts_not_found_msg),
-                        Toast.LENGTH_LONG
+                    context,
+                    getString(R.string.contacts_not_found_msg),
+                    Toast.LENGTH_LONG
                 ).show()
+        })
+        contactListViewModel.isContactListLoading().observe(viewLifecycleOwner, { isLoading ->
+            if (isLoading) {
+                listFrag?.progressBar?.visibility = View.VISIBLE
+            } else {
+                listFrag?.progressBar?.visibility = View.GONE
+            }
         })
     }
 

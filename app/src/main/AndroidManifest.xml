@@ -18,12 +18,6 @@
             android:exported="true">
         </receiver>
 
-        <service
-            android:name="ru.yodata.app65.utils.service.ContactLoaderService"
-            android:enabled="true"
-            android:exported="false">
-        </service>
-
         <activity android:name=".view.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

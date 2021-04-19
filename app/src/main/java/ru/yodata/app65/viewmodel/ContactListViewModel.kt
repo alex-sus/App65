@@ -6,6 +6,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.yodata.app65.model.BriefContact
@@ -17,11 +22,18 @@ class ContactListViewModel(application: Application) : AndroidViewModel(applicat
     private val contResolver = application.contentResolver
     private lateinit var contactList: List<BriefContact> // полный список контактов
     private val filteredList =
-            MutableLiveData<List<BriefContact>>() // фильтрованный список контактов
+        MutableLiveData<List<BriefContact>>() // фильтрованный список контактов
     var currentFilterValue = " " // фильтр имен, соответствующий filteredList
+    private val isContactListLoading = MutableLiveData(false)
+    private val disposable: CompositeDisposable = CompositeDisposable()
 
     init {
         loadContactList()
+    }
+
+    override fun onCleared() {
+        disposable.dispose()
+        super.onCleared()
     }
 
     fun setNameFilter(newFilterValue: String) {
@@ -56,13 +68,28 @@ class ContactListViewModel(application: Application) : AndroidViewModel(applicat
 
     fun getFilteredContactList(): LiveData<List<BriefContact>> = filteredList
 
+    fun isContactListLoading(): LiveData<Boolean> = isContactListLoading
+
     private fun loadContactList() {
         Log.d(TAG, "ContactListViewModel начинаю запрос данных контактов...")
-        viewModelScope.launch(Dispatchers.IO) {
-            contactList = ContactRepository.getContactList(contResolver)
-            filteredList.postValue(contactList)
-            Log.d(TAG, "ContactListViewModel данные контактов получены.")
-        }
+        ContactRepository.getContactList(contResolver)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { isContactListLoading.postValue(true) }
+            .subscribeBy(
+                onSuccess = {
+                    contactList = it
+                    filteredList.postValue(it)
+                    isContactListLoading.postValue(false)
+                },
+                onError = {
+                    isContactListLoading.postValue(false)
+                    Log.d(TAG, "ContactListViewModel ошибка при загрузке списка контактов:")
+                    Log.d(TAG, it.stackTraceToString())
+                }
+            )
+            .addTo(disposable)
+        Log.d(TAG, "ContactListViewModel данные контактов получены.")
     }
 
 }
