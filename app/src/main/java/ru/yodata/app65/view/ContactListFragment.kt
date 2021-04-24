@@ -11,17 +11,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat.getDrawable
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import ru.yodata.app65.AppDelegate
 import ru.yodata.app65.R
 import ru.yodata.app65.databinding.FragmentContactListBinding
 import ru.yodata.app65.utils.Constants.TAG
+import ru.yodata.app65.utils.injectViewModel
 import ru.yodata.app65.viewmodel.ContactListViewModel
+import javax.inject.Inject
 
 class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
 
     private var listFrag: FragmentContactListBinding? = null
-    val contactListViewModel: ContactListViewModel by viewModels()
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var contactListViewModel: ContactListViewModel
     private var navigateCallback: OnContactListCallback? = null
 
     override fun onAttach(context: Context) {
@@ -29,9 +35,18 @@ class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
         if (context is OnContactListCallback) {
             navigateCallback = context
         } else throw ClassCastException(
-            context.toString() +
-                    " must implement OnContactListCallback!"
+                context.toString() +
+                        " must implement OnContactListCallback!"
         )
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (requireActivity().application as AppDelegate)
+                .appComponent
+                .plusContactListViewModelComponent()
+                .inject(this)
+        contactListViewModel = injectViewModel(viewModelFactory)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -8,11 +8,18 @@ import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import ru.yodata.app65.di.app.AppComponent
+import ru.yodata.app65.di.app.AppModule
+import ru.yodata.app65.di.app.DaggerAppComponent
 import ru.yodata.app65.utils.Constants.ANDROID_RESOURCE
 import ru.yodata.app65.utils.Constants.CHANNEL_ID
 import ru.yodata.app65.utils.Constants.notificationSound
 
-class App : Application() {
+class AppDelegate : Application() {
+
+    val appComponent: AppComponent by lazy {
+        DaggerAppComponent.builder().appModule(AppModule(this)).build()
+    }
 
     override fun onCreate() {
         super.onCreate()

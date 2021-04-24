@@ -1,20 +1,20 @@
 package ru.yodata.app65.viewmodel
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.yodata.app65.model.BriefContact
-import ru.yodata.app65.model.ContactRepository
+import ru.yodata.app65.model.ContactRepositoryInterface
 import ru.yodata.app65.utils.Constants.TAG
+import javax.inject.Inject
 
-class ContactListViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val contResolver = application.contentResolver
+class ContactListViewModel @Inject constructor(
+        private val contactRepository: ContactRepositoryInterface
+) : ViewModel() {
     private lateinit var contactList: List<BriefContact> // полный список контактов
     private val filteredList =
             MutableLiveData<List<BriefContact>>() // фильтрованный список контактов
@@ -59,7 +59,7 @@ class ContactListViewModel(application: Application) : AndroidViewModel(applicat
     private fun loadContactList() {
         Log.d(TAG, "ContactListViewModel начинаю запрос данных контактов...")
         viewModelScope.launch(Dispatchers.IO) {
-            contactList = ContactRepository.getContactList(contResolver)
+            contactList = contactRepository.getContactList()
             filteredList.postValue(contactList)
             Log.d(TAG, "ContactListViewModel данные контактов получены.")
         }
