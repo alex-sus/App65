@@ -11,36 +11,36 @@ import ru.yodata.app65.utils.Constants.EMPTY_VALUE
 import ru.yodata.app65.utils.Constants.TAG
 import java.util.*
 
-object ContactRepository {
+private const val CUR_CONTACT_PHONE_SELECTION = "${ContactsContract.Data.MIMETYPE} = " +
+        "'${ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE}'" +
+        " and ${ContactsContract.Data.LOOKUP_KEY} = ?"
+private const val CUR_CONTACT_SELECTION = "${ContactsContract.Contacts.LOOKUP_KEY} = ?"
+private const val CUR_CONTACT_DATA_SELECTION = "${ContactsContract.Data.LOOKUP_KEY} = ?"
+private const val ALPHABET_SORT_ORDER = "${ContactsContract.Contacts.DISPLAY_NAME} ASC"
+private val BRIEF_CONTACTS_PROJECTION = arrayOf(
+        ContactsContract.Contacts.LOOKUP_KEY,
+        ContactsContract.Contacts.DISPLAY_NAME,
+        ContactsContract.Contacts.PHOTO_URI
+)
+private const val CURSOR_LOOKUP_KEY_COLUMN = 0
+private const val CURSOR_DISPLAY_NAME_COLUMN = 1
+private const val CURSOR_PHOTO_URI_COLUMN = 2
+private val PHONE_PROJECTION = arrayOf(
+        ContactsContract.Data.DATA1
+)
+private const val CURSOR_PHONE_COLUMN = 0
+private val DETAIL_PROJECTION = arrayOf(
+        ContactsContract.Data.MIMETYPE,
+        ContactsContract.Data.DATA1,
+        ContactsContract.Data.DATA2
+)
+private const val CURSOR_MIMETYPE_COLUMN = 0
+private const val CURSOR_MAIN_VALUE_COLUMN = 1
+private const val CURSOR_ADDITIONAL_VALUE_COLUMN = 2
 
-    private const val CUR_CONTACT_PHONE_SELECTION = "${ContactsContract.Data.MIMETYPE} = " +
-            "'${ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE}'" +
-            " and ${ContactsContract.Data.LOOKUP_KEY} = ?"
-    private const val CUR_CONTACT_SELECTION = "${ContactsContract.Contacts.LOOKUP_KEY} = ?"
-    private const val CUR_CONTACT_DATA_SELECTION = "${ContactsContract.Data.LOOKUP_KEY} = ?"
-    private const val ALPHABET_SORT_ORDER = "${ContactsContract.Contacts.DISPLAY_NAME} ASC"
-    private val BRIEF_CONTACTS_PROJECTION = arrayOf(
-            ContactsContract.Contacts.LOOKUP_KEY,
-            ContactsContract.Contacts.DISPLAY_NAME,
-            ContactsContract.Contacts.PHOTO_URI
-    )
-    private const val CURSOR_LOOKUP_KEY_COLUMN = 0
-    private const val CURSOR_DISPLAY_NAME_COLUMN = 1
-    private const val CURSOR_PHOTO_URI_COLUMN = 2
-    private val PHONE_PROJECTION = arrayOf(
-            ContactsContract.Data.DATA1
-    )
-    private const val CURSOR_PHONE_COLUMN = 0
-    private val DETAIL_PROJECTION = arrayOf(
-            ContactsContract.Data.MIMETYPE,
-            ContactsContract.Data.DATA1,
-            ContactsContract.Data.DATA2
-    )
-    private const val CURSOR_MIMETYPE_COLUMN = 0
-    private const val CURSOR_MAIN_VALUE_COLUMN = 1
-    private const val CURSOR_ADDITIONAL_VALUE_COLUMN = 2
+class ContactRepository(private val contResolver: ContentResolver) : ContactRepositoryInterface {
 
-    suspend fun getContactList(contResolver: ContentResolver): List<BriefContact> {
+    override suspend fun getContactList(): List<BriefContact> {
         val briefContactList = mutableListOf<BriefContact>()
         withContext(Dispatchers.IO) {
             Log.d(TAG, "Старт метода: ${this::class.java.simpleName}:" +
@@ -95,7 +95,7 @@ object ContactRepository {
         return briefContactList
     }
 
-    fun getContactById(contResolver: ContentResolver, contactId: String): Contact {
+    override fun getContactById(contactId: String): Contact {
         var name = EMPTY_VALUE
         var birthday: Calendar? = null
         val phones = mutableListOf<String>()

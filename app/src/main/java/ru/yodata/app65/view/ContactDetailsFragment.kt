@@ -1,6 +1,5 @@
 package ru.yodata.app65.view
 
-//import ru.yodata.app65.utils.service.OnContactLoaderServiceCallback
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -12,7 +11,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import ru.yodata.app65.AppDelegate
 import ru.yodata.app65.R
 import ru.yodata.app65.databinding.FragmentContactDetailsBinding
 import ru.yodata.app65.model.Contact
@@ -20,17 +20,33 @@ import ru.yodata.app65.utils.Constants
 import ru.yodata.app65.utils.Constants.EMPTY_VALUE
 import ru.yodata.app65.utils.Constants.TAG
 import ru.yodata.app65.utils.alarmbroadcast.BirthdayAlarmReceiver
+import ru.yodata.app65.utils.injectViewModel
 import ru.yodata.app65.viewmodel.ContactDetailViewModel
 import java.util.*
+import javax.inject.Inject
 
 private const val DAY_OF_MONTH_29 = 29
 
 class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
+
     private var detailsFrag: FragmentContactDetailsBinding? = null
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var contactDetailViewModel: ContactDetailViewModel
 
     private val alarmHelper = BirthdayAlarmManagerHelper()
     private val contactId: String by lazy {
         requireArguments().getString(CONTACT_ID, "")
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (requireActivity().application as AppDelegate)
+                .appComponent
+                .plusContactDetailViewModelComponent()
+                .inject(this)
+        contactDetailViewModel = injectViewModel(viewModelFactory)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -38,7 +54,6 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
         detailsFrag = FragmentContactDetailsBinding.bind(view)
         (activity as AppCompatActivity).supportActionBar?.title =
                 getString(R.string.contact_details_fragment_title)
-        val contactDetailViewModel: ContactDetailViewModel by viewModels()
         contactDetailViewModel.getContactById(contactId).observe(viewLifecycleOwner, { curContact ->
             if (curContact != null) {
                 try {

@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
-        android:name=".App"
+        android:name=".AppDelegate"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -17,12 +17,6 @@
             android:enabled="true"
             android:exported="true">
         </receiver>
-
-        <service
-            android:name="ru.yodata.app65.utils.service.ContactLoaderService"
-            android:enabled="true"
-            android:exported="false">
-        </service>
 
         <activity android:name=".view.MainActivity">
             <intent-filter>
