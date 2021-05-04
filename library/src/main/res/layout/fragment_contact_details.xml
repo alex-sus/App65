@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:padding="@dimen/contact_details_fragment_padding"
+    tools:context="ru.yodata.library.view.ContactDetailsFragment">
+
+    <TextView
+        android:id="@+id/descriptionTv"
+        style="@style/CommonValueStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_vertical_gap"
+        android:singleLine="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/descriptionLabel"
+        tools:text="Toolbar — это полная замена ActionBar’а. В отличие от него Toolbar более настраиваемый. Так как Toolbar является обычным View, то мы можем разместить в нем любые View-компоненты " />
+
+    <TextView
+        android:id="@+id/phone2Tv"
+        style="@style/CommonValueStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        app:layout_constraintStart_toEndOf="@+id/phone2Label"
+        app:layout_constraintTop_toBottomOf="@+id/phone1Tv"
+        tools:text="(3412)77-88-00" />
+
+    <TextView
+        android:id="@+id/email1Tv"
+        style="@style/CommonValueStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        app:layout_constraintStart_toEndOf="@+id/email1Label"
+        app:layout_constraintTop_toBottomOf="@+id/divider"
+        tools:text="one@gmail.com" />
+
+    <TextView
+        android:id="@+id/email2Tv"
+        style="@style/CommonValueStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        app:layout_constraintStart_toEndOf="@+id/email2Label"
+        app:layout_constraintTop_toBottomOf="@+id/email1Tv"
+        tools:text="two@gmail.com" />
+
+    <TextView
+        android:id="@+id/phone2Label"
+        style="@style/CommonLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:text="@string/phone2_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phone1Label" />
+
+    <TextView
+        android:id="@+id/email1Label"
+        style="@style/CommonLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:text="@string/email1_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
+
+    <TextView
+        android:id="@+id/email2Label"
+        style="@style/CommonLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:text="@string/email2_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email1Label" />
+
+    <TextView
+        android:id="@+id/descriptionLabel"
+        style="@style/CommonLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:text="@string/description_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider2" />
+
+    <ImageView
+        android:id="@+id/bigPhotoIv"
+        android:layout_width="@dimen/big_photo_size"
+        android:layout_height="@dimen/big_photo_size"
+        android:contentDescription="@string/big_photo"
+        android:src="@drawable/programmer2_150"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/fullNameTv"
+        style="@style/LargeValueStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:singleLine="false"
+        android:text="@string/loading_msg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bigPhotoIv"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Суслопаров Алексей Владимирович" />
+
+    <TextView
+        android:id="@+id/phone1Tv"
+        style="@style/CommonValueStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        app:layout_constraintStart_toEndOf="@+id/phone1Label"
+        app:layout_constraintTop_toBottomOf="@+id/divider3"
+        tools:text="(3412)77-88-99" />
+
+    <TextView
+        android:id="@+id/phone1Label"
+        style="@style/CommonLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:text="@string/phone1_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider3" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_thickness"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@+id/phone2Label" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_thickness"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@+id/email2Label" />
+
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@+id/birthdayLabel"
+        tools:layout_editor_absoluteX="8dp" />
+
+    <TextView
+        android:id="@+id/birthdayLabel"
+        style="@style/CommonLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:text="@string/birthday_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bigPhotoIv" />
+
+    <TextView
+        android:id="@+id/birthdayTv"
+        style="@style/CommonValueStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        app:layout_constraintStart_toEndOf="@+id/birthdayLabel"
+        app:layout_constraintTop_toBottomOf="@+id/bigPhotoIv"
+        tools:text="13 ноября" />
+
+    <ToggleButton
+        android:id="@+id/remindBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOff="@string/remindBtnOff_msg"
+        android:textOn="@string/remindBtnOn_msg"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/divider3"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
