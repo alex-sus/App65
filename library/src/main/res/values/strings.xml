@@ -30,4 +30,12 @@
     <string name="permissions_request_epilogue_cancel_btn">No, exit the app</string>
     <string name="search_view_title">Search</string>
     <string name="contacts_not_found_msg">Contacts not found</string>
+    <string name="location_label">Location:</string>
+    <string name="latitude_label">Latitude:</string>
+    <string name="longitude_label">Longitude:</string>
+    <string name="address_label">Address:</string>
+    <string name="contact_location_screen_title">Contact location</string>
+    <string name="coordinates_label">Coordinates:</string>
+    <string name="point_location_msg">Point on the map!</string>
+    <string name="location_saved_msg">Location saved</string>
 </resources>

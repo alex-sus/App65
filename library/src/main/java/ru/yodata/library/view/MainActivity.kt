@@ -14,10 +14,10 @@ import ru.yodata.library.utils.PermissionsAccessHelper.startPermissionsRequest
 // Значение интента при старте активити по ярлыку на экране
 private const val LAUNCHER_START_INTENT = "android.intent.action.MAIN"
 
-class MainActivity : AppCompatActivity(), OnContactListCallback {
+class MainActivity : AppCompatActivity(), OnContactListCallback, OnMapFragmentCallback {
 
     val askPermissions = arrayOf(
-            Manifest.permission.READ_CONTACTS
+        Manifest.permission.READ_CONTACTS
     )
     private val curIntent by lazy(LazyThreadSafetyMode.NONE) { intent }
     private val activityStartedByNotification by lazy(LazyThreadSafetyMode.NONE) {
@@ -76,14 +76,25 @@ class MainActivity : AppCompatActivity(), OnContactListCallback {
 
     override fun navigateToContactDetailsFragment(contactId: String) {
         val transaction = supportFragmentManager.beginTransaction()
-                .replace(
-                        R.id.frag_container,
-                        ContactDetailsFragment.newInstance(contactId),
-                        ContactDetailsFragment.FRAGMENT_NAME
-                )
+            .replace(
+                R.id.frag_container,
+                ContactDetailsFragment.newInstance(contactId),
+                ContactDetailsFragment.FRAGMENT_NAME
+            )
         if (!activityStartedByNotification)
             transaction.addToBackStack(ContactDetailsFragment.FRAGMENT_NAME)
         transaction.commit()
+    }
+
+    override fun navigateToMapFragment(contactId: String) {
+        supportFragmentManager.beginTransaction()
+                .replace(
+                        R.id.frag_container,
+                        ContactMapFragment.newInstance(contactId),
+                        ContactMapFragment.FRAGMENT_NAME
+                )
+                .addToBackStack(ContactMapFragment.FRAGMENT_NAME)
+            .commit()
     }
 
 }

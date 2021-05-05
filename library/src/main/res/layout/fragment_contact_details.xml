@@ -23,7 +23,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/descriptionLabel"
-        tools:text="Toolbar — это полная замена ActionBar’а. В отличие от него Toolbar более настраиваемый. Так как Toolbar является обычным View, то мы можем разместить в нем любые View-компоненты " />
+        tools:text="Toolbar — это полная замена ActionBar’а. В отличие от него Toolbar более настраиваемый." />
 
     <TextView
         android:id="@+id/phone2Tv"
@@ -148,6 +148,8 @@
         android:layout_height="@dimen/divider_thickness"
         android:layout_marginTop="@dimen/normal_vertical_gap"
         android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/phone2Label" />
 
     <View
@@ -156,6 +158,8 @@
         android:layout_height="@dimen/divider_thickness"
         android:layout_marginTop="@dimen/normal_vertical_gap"
         android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email2Label" />
 
     <View
@@ -164,8 +168,9 @@
         android:layout_height="1dp"
         android:layout_marginTop="@dimen/normal_vertical_gap"
         android:background="?android:attr/listDivider"
-        app:layout_constraintTop_toBottomOf="@+id/birthdayLabel"
-        tools:layout_editor_absoluteX="8dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/birthdayLabel" />
 
     <TextView
         android:id="@+id/birthdayLabel"
@@ -198,6 +203,104 @@
         app:layout_constraintBottom_toTopOf="@+id/divider3"
         app:layout_constraintEnd_toEndOf="parent"
         tools:visibility="visible" />
+
+    <View
+        android:id="@+id/divider4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/descriptionTv" />
+
+    <TextView
+        android:id="@+id/locationLabel"
+        style="@style/CommonLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:text="@string/location_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider4" />
+
+    <TextView
+        android:id="@+id/latitudeLabel"
+        style="@style/CommonLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:text="@string/latitude_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/locationLabel" />
+
+    <TextView
+        android:id="@+id/latitudeTv"
+        style="@style/CommonValueStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        app:layout_constraintStart_toEndOf="@+id/latitudeLabel"
+        app:layout_constraintTop_toBottomOf="@+id/locationLabel"
+        tools:text="56.76354495009" />
+
+    <TextView
+        android:id="@+id/longitudeLabel"
+        style="@style/CommonLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_vertical_gap"
+        android:text="@string/longitude_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/latitudeLabel" />
+
+    <TextView
+        android:id="@+id/longitudeTv"
+        style="@style/CommonValueStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:layout_marginTop="@dimen/small_vertical_gap"
+        app:layout_constraintStart_toEndOf="@+id/longitudeLabel"
+        app:layout_constraintTop_toBottomOf="@+id/latitudeLabel"
+        tools:text="78.0001489" />
+
+    <TextView
+        android:id="@+id/addressLabel"
+        style="@style/CommonLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:text="@string/address_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/longitudeLabel" />
+
+    <TextView
+        android:id="@+id/addressTv"
+        style="@style/CommonValueStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:singleLine="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/addressLabel"
+        app:layout_constraintTop_toBottomOf="@+id/longitudeLabel"
+        tools:text="г.Ижевск, ул.Удмуртская, 164-28" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/toMapFragmentFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/normal_horizontal_gap"
+        android:layout_marginBottom="@dimen/normal_vertical_gap"
+        android:clickable="true"
+        android:focusable="true"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/addressTv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_baseline_place_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

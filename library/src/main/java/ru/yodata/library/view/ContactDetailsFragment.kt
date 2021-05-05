@@ -13,6 +13,7 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import ru.yodata.java.entities.Contact
+import ru.yodata.java.entities.LocationData
 import ru.yodata.library.R
 import ru.yodata.library.databinding.FragmentContactDetailsBinding
 import ru.yodata.library.di.HasAppComponent
@@ -43,13 +44,24 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
     private val contactId: String by lazy {
         requireArguments().getString(CONTACT_ID, "")
     }
+    private var navigateCallback: OnMapFragmentCallback? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnMapFragmentCallback) {
+            navigateCallback = context
+        } else throw ClassCastException(
+            context.toString() +
+                    " must implement OnMapFragmentCallback!"
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireActivity().application as? HasAppComponent)
-                ?.getAppComponent()
-                ?.plusContactDetailsContainer()
-                ?.inject(this)
+            ?.getAppComponent()
+            ?.plusContactDetailsContainer()
+            ?.inject(this)
         contactDetailsViewModel = injectViewModel(viewModelFactory)
     }
 
@@ -57,7 +69,10 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
         super.onViewCreated(view, savedInstanceState)
         detailsFrag = FragmentContactDetailsBinding.bind(view)
         (activity as AppCompatActivity).supportActionBar?.title =
-                getString(R.string.contact_details_fragment_title)
+            getString(R.string.contact_details_fragment_title)
+        detailsFrag?.toMapFragmentFab?.setOnClickListener {
+            navigateCallback?.navigateToMapFragment(contactId)
+        }
         contactDetailsViewModel.getContactById(contactId)
             .observe(viewLifecycleOwner, { curContact ->
                 if (curContact != null) {
@@ -73,6 +88,17 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
                     }
                 }
             })
+        contactDetailsViewModel.getLocationDataById(contactId)
+                .observe(viewLifecycleOwner, { curLocation ->
+                    if (curLocation != null) {
+                        try {
+                            showLocationData(curLocation)
+                        } catch (e: IllegalStateException) {
+                            Log.d(TAG, "Исключение в ContactDetailsFragment: ")
+                            Log.d(TAG, e.stackTraceToString())
+                        }
+                    }
+                })
     }
 
     private fun showContactDetails(curContact: Contact) {
@@ -97,10 +123,21 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
                 } else {
                     bigPhotoIv.setImageResource(R.drawable.programmer2_150)
                 }
+
                 remindBtn.isChecked = if (birthday != null) {
                     alarmHelper.isBirthdayAlarmOn(curContact)
                 } else false
                 remindBtn.visibility = if (birthday != null) View.VISIBLE else View.GONE
+            }
+        }
+    }
+
+    private fun showLocationData(curLocation: LocationData) {
+        with(curLocation) {
+            detailsFrag?.apply {
+                latitudeTv.text = latitude.toString()
+                longitudeTv.text = longitude.toString()
+                addressTv.text = address
             }
         }
     }
@@ -110,15 +147,21 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
         super.onDestroyView()
     }
 
+    override fun onDetach() {
+        navigateCallback = null
+        super.onDetach()
+    }
+
     companion object {
 
         private const val CONTACT_ID = "id"
         val FRAGMENT_NAME: String = ContactDetailsFragment::class.java.name
+
         @JvmStatic
         fun newInstance(contactId: String) =
-            ContactDetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(CONTACT_ID, contactId)
+                ContactDetailsFragment().apply {
+                    arguments = Bundle().apply {
+                        putString(CONTACT_ID, contactId)
                 }
             }
     }

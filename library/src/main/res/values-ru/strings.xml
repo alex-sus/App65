@@ -30,4 +30,12 @@
     <string name="permissions_request_epilogue_cancel_btn">Нет, выйти из приложения</string>
     <string name="search_view_title">Поиск</string>
     <string name="contacts_not_found_msg">Контактов не найдено</string>
+    <string name="location_label">Местоположение:</string>
+    <string name="latitude_label">Широта:</string>
+    <string name="longitude_label">Долгота:</string>
+    <string name="address_label">Адрес:</string>
+    <string name="contact_location_screen_title">Местоположение контакта</string>
+    <string name="coordinates_label">Координаты:</string>
+    <string name="point_location_msg">Укажите на карте!</string>
+    <string name="location_saved_msg">Местоположение сохранено</string>
 </resources>
