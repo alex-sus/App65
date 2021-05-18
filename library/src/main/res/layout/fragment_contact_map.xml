@@ -27,12 +27,14 @@
         android:id="@+id/curContactGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="curIdentitiesBarrier,curAddressLabel,curNameTv,curCoordinatesLabel,curAddressTv,curCoordinatesTv,curPhotoIv" />
+        app:constraint_referenced_ids="curIdentitiesBarrier,curAddressLabel,curNameTv,curLatitudeLabel,curAddressTv,curLatitudeTv,curPhotoIv" />
 
     <ImageView
         android:id="@+id/curPhotoIv"
         android:layout_width="@dimen/small_photo_size"
         android:layout_height="@dimen/small_photo_size"
+        android:layout_marginStart="@dimen/very_small_horizontal_gap"
+        android:layout_marginTop="@dimen/very_small_vertical_gap"
         android:contentDescription="@string/photo"
         android:src="@drawable/programmer2_70"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,8 +46,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/normal_horizontal_gap"
-        android:layout_marginTop="@dimen/very_small_vertical_gap"
-        android:singleLine="false"
+        android:layout_marginEnd="@dimen/very_small_horizontal_gap"
+        android:singleLine="true"
         android:text="@string/loading_msg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/curPhotoIv"
@@ -53,36 +55,39 @@
         tools:text="Суслопаров Алексей Владимирович" />
 
     <TextView
-        android:id="@+id/curCoordinatesLabel"
+        android:id="@+id/curLatitudeLabel"
         style="@style/CommonLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/small_vertical_gap"
-        android:text="@string/coordinates_label"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/curIdentitiesBarrier" />
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:layout_marginTop="@dimen/very_small_vertical_gap"
+        android:text="@string/latitude_label"
+        app:layout_constraintStart_toEndOf="@+id/curPhotoIv"
+        app:layout_constraintTop_toBottomOf="@+id/curNameTv" />
 
     <TextView
-        android:id="@+id/curCoordinatesTv"
+        android:id="@+id/curLatitudeTv"
         style="@style/CommonValueStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/normal_horizontal_gap"
-        android:layout_marginTop="@dimen/small_vertical_gap"
-        android:text="@string/point_location_msg"
-        app:layout_constraintStart_toEndOf="@+id/curCoordinatesLabel"
-        app:layout_constraintTop_toBottomOf="@id/curIdentitiesBarrier"
-        tools:text="56.9340084 : 78.0001489" />
+        android:layout_marginStart="@dimen/small_horizontal_gap"
+        android:layout_marginTop="@dimen/very_small_vertical_gap"
+        android:layout_marginEnd="@dimen/very_small_horizontal_gap"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/curLatitudeLabel"
+        app:layout_constraintTop_toBottomOf="@+id/curNameTv"
+        tools:text="56.93400845879258" />
 
     <TextView
         android:id="@+id/curAddressLabel"
         style="@style/CommonLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/small_vertical_gap"
+        android:layout_marginStart="@dimen/very_small_horizontal_gap"
+        android:layout_marginTop="@dimen/very_small_vertical_gap"
         android:text="@string/address_label"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/curCoordinatesLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/curPhotoIv" />
 
     <TextView
         android:id="@+id/curAddressTv"
@@ -90,13 +95,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/normal_horizontal_gap"
-        android:layout_marginTop="@dimen/small_vertical_gap"
-        android:layout_marginEnd="@dimen/small_horizontal_gap"
+        android:layout_marginTop="@dimen/very_small_vertical_gap"
+        android:layout_marginEnd="@dimen/very_small_horizontal_gap"
         android:singleLine="false"
+        android:text="@string/point_location_msg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/curAddressLabel"
-        app:layout_constraintTop_toBottomOf="@+id/curCoordinatesLabel"
-        tools:text="г.Ижевск, ул.Удмуртская, 164-28" />
+        app:layout_constraintTop_toBottomOf="@+id/curPhotoIv"
+        tools:text="Россия, Удмуртская Республика, Ижевск, Удмуртская улица, 164" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/curIdentitiesBarrier"
@@ -114,10 +120,44 @@
         android:layout_marginTop="@dimen/normal_vertical_gap"
         android:layout_marginEnd="@dimen/normal_horizontal_gap"
         android:clickable="true"
+        android:enabled="false"
         android:src="@drawable/ic_baseline_done_24_green"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/map"
         tools:visibility="visible" />
+
+    <ProgressBar
+        android:id="@+id/geocodingProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="24dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/curAddressLabel"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/curLongitudeLabel"
+        style="@style/CommonLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
+        android:text="@string/longitude_label"
+        app:layout_constraintStart_toEndOf="@+id/curPhotoIv"
+        app:layout_constraintTop_toBottomOf="@+id/curLatitudeLabel" />
+
+    <TextView
+        android:id="@+id/curLongitudeTv"
+        style="@style/CommonValueStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/small_horizontal_gap"
+        android:layout_marginEnd="@dimen/very_small_horizontal_gap"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/curLongitudeLabel"
+        app:layout_constraintTop_toTopOf="@+id/curLongitudeLabel"
+        tools:text="53.08490536558792777" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

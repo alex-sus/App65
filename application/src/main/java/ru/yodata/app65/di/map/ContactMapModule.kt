@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import ru.yodata.java.interactors.ContactLocationRepositoryInterface
 import ru.yodata.java.interactors.ContactRepositoryInterface
+import ru.yodata.java.interactors.YandexGeocoderRepositoryInterface
 import ru.yodata.java.interactors.map.ContactMapInteractor
 import ru.yodata.java.interactors.map.ContactMapModel
 
@@ -14,6 +15,12 @@ class ContactMapModule {
     @Provides
     fun provideContactMapInteractor(
             contactRepository: ContactRepositoryInterface,
-            locRepository: ContactLocationRepositoryInterface)
-            : ContactMapInteractor = ContactMapModel(contactRepository, locRepository)
+            locationRepository: ContactLocationRepositoryInterface,
+            geocoderRepository: YandexGeocoderRepositoryInterface
+    ): ContactMapInteractor =
+            ContactMapModel(
+                    contactRepository,
+                    locationRepository,
+                    geocoderRepository
+            )
 }

@@ -36,6 +36,7 @@
     <string name="address_label">Адрес:</string>
     <string name="contact_location_screen_title">Местоположение контакта</string>
     <string name="coordinates_label">Координаты:</string>
-    <string name="point_location_msg">Укажите на карте!</string>
+    <string name="point_location_msg">Укажите точку на карте!</string>
     <string name="location_saved_msg">Местоположение сохранено</string>
+    <string name="address_not_defined_msg">Адрес не определен</string>
 </resources>

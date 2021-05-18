@@ -13,7 +13,8 @@ import javax.inject.Singleton
     AppModule::class,
     ViewModelFactoryModule::class,
     RepositoryModule::class,
-    ContactLocationDatabaseModule::class
+    ContactLocationDatabaseModule::class,
+    RetrofitModule::class
 ])
 interface AppComponent : AppContainer {
     override fun plusContactListContainer(): ContactListComponent

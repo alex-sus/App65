@@ -12,4 +12,10 @@ interface ContactMapInteractor {
     suspend fun updateContactLocation(locatedContact: LocatedContact)
 
     suspend fun getBriefContactById(contactId: String): BriefContact?
+
+    suspend fun reverseGeocoding(
+            latitude: Double,
+            longitude: Double,
+            apikey: String
+    ): String
 }
