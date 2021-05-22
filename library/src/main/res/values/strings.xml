@@ -39,4 +39,9 @@
     <string name="point_location_msg">Point on the map!</string>
     <string name="location_saved_msg">Location saved</string>
     <string name="address_not_defined_msg">Address not defined</string>
+    <string name="single_map_menu_label">Location</string>
+    <string name="route_map_menu_label">Route</string>
+    <string name="everybody_map_menu_label">All</string>
+    <string name="everybody_location_screen_title">All contacts location</string>
+    <string name="everybody_toolbar_btn_title">All</string>
 </resources>

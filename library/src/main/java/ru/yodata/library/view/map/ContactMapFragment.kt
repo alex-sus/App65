@@ -1,8 +1,9 @@
-package ru.yodata.library.view
+package ru.yodata.library.view.map
 
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -23,22 +24,26 @@ import ru.yodata.library.di.HasAppComponent
 import ru.yodata.library.utils.Constants.GEOCODING_IN_PROGRESS_SYMBOL
 import ru.yodata.library.utils.Constants.TAG
 import ru.yodata.library.utils.injectViewModel
-import ru.yodata.library.view.MapSettings.MAP_TILT
-import ru.yodata.library.view.MapSettings.MAP_ZOOM
-import ru.yodata.library.view.MapSettings.START_LOCATION
+import ru.yodata.library.view.map.ContactMapSettings.MAP_TILT
+import ru.yodata.library.view.map.ContactMapSettings.MAP_ZOOM
+import ru.yodata.library.view.map.ContactMapSettings.START_LOCATION
 import ru.yodata.library.viewmodel.ContactLocationsViewModel
 import javax.inject.Inject
 
+private const val CONTACT_ID = "id"
+
 class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
 
-    private var mapFrag: FragmentContactMapBinding? = null
+    private var contactMapFrag: FragmentContactMapBinding? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     lateinit var contactLocationsViewModel: ContactLocationsViewModel
-    private val contactId: String by lazy {
+
+    /*private val contactId: String by lazy {
         requireArguments().getString(CONTACT_ID, "")
-    }
+    }*/
+    private lateinit var contactId: String
     private lateinit var map: GoogleMap
     private var mapReady = false
     private lateinit var curLocatedContact: LocatedContact
@@ -57,10 +62,11 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mapFrag = FragmentContactMapBinding.bind(view)
+        contactMapFrag = FragmentContactMapBinding.bind(view)
         (activity as AppCompatActivity).supportActionBar?.title =
                 getString(R.string.contact_location_screen_title)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        contactId = parentFragment?.arguments?.getString(CONTACT_ID, "") ?: ""
         // Обзервер работает с контактами, координаты которых уже есть в БД
         contactLocationsViewModel.getLocatedContactList()
                 .observe(viewLifecycleOwner, { locatedContactList ->
@@ -71,9 +77,10 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
                     if (existLocatedContact != null) {
                         curLocatedContact = existLocatedContact
                         mapFragment?.getMapAsync(onMapReadyCallback)
+                        Log.d(TAG, "ContactMapFragment: старт карты в первом обзервере")
                         Log.d(TAG, "ContactMapFragment: поиск контакта в списке БД окончен.")
                         Log.d(TAG, "curLocatedContact = $curLocatedContact")
-                        mapFrag?.apply {
+                        contactMapFrag?.apply {
                             curNameTv.text = curLocatedContact.name
                             if (!curLocatedContact.photoUri.isNullOrEmpty()) {
                                 curPhotoIv.setImageURI(curLocatedContact.photoUri?.toUri())
@@ -105,7 +112,8 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
                                     address = ""
                             )
                             mapFragment?.getMapAsync(onMapReadyCallback)
-                            mapFrag?.apply {
+                            Log.d(TAG, "ContactMapFragment: старт карты во втором обзервере")
+                            contactMapFrag?.apply {
                                 curNameTv.text = curLocatedContact.name
                                 if (!curLocatedContact.photoUri.isNullOrEmpty()) {
                                     curPhotoIv.setImageURI(curLocatedContact.photoUri?.toUri())
@@ -125,44 +133,46 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
         contactLocationsViewModel.getChangedLocationData()
                 .observe(viewLifecycleOwner, { curLocationData ->
                     if (curLocationData != null) {
-                        mapFrag?.saveLocationFab?.isEnabled = false
+                        contactMapFrag?.saveLocationFab?.isEnabled = false
                         curChangedLocationData = curLocationData
-                        mapFrag?.apply {
+                        contactMapFrag?.apply {
                             curLatitudeTv.text = curLocationData.latitude.toString()
                             curLongitudeTv.text = curLocationData.longitude.toString()
                         }
                         if (curLocationData.address != GEOCODING_IN_PROGRESS_SYMBOL) {
-                            mapFrag?.geocodingProgressBar?.visibility = View.GONE
-                            mapFrag?.curAddressTv?.text = curLocationData.address
-                            mapFrag?.saveLocationFab?.isEnabled = true
+                            contactMapFrag?.geocodingProgressBar?.visibility = View.GONE
+                            contactMapFrag?.curAddressTv?.text = curLocationData.address
+                            contactMapFrag?.saveLocationFab?.isEnabled = true
                         }
                     }
                 })
-        mapFrag?.saveLocationFab?.setOnClickListener { saveChangedLocationData() }
+        contactMapFrag?.saveLocationFab?.setOnClickListener { saveChangedLocationData() }
     }
 
     override fun onDestroyView() {
-        mapFrag = null
+        contactMapFrag = null
         super.onDestroyView()
     }
 
     private val onMapReadyCallback = OnMapReadyCallback { googleMap ->
         map = googleMap
         map.uiSettings.isZoomControlsEnabled = true // добавить на карту кнопки масштабирования
-        // Настроить параметры камеры и отобразить карту с маркером контакта в центре (если есть)
+        // Получить координаты измененного местоположения контакта (если менялось)
         var startLocation = contactLocationsViewModel.getChangedLatLngData()
-        if (startLocation == null) {
-            if (isNewContactWithoutLocation) {
+        if (startLocation == null) { // пользователь не менял местоположение контакта
+            Log.d(TAG, "startLocation == null")
+            if (isNewContactWithoutLocation) { // у контакта еще нет местоположения в БД
                 startLocation = START_LOCATION
-            } else {
+            } else { // у контакта уже есть местоположение в БД
                 startLocation = LatLng(curLocatedContact.latitude, curLocatedContact.longitude)
                 if (::curContactMarker.isInitialized) curContactMarker.remove()
                 curContactMarker = map.addMarker(MarkerOptions().position(startLocation))
             }
-        } else {
+        } else { // пользователь изменил местоположение контакта и пока не сохранил его
+            Log.d(TAG, "startLocation не null")
             if (::curContactMarker.isInitialized) curContactMarker.remove()
             curContactMarker = map.addMarker(MarkerOptions().position(startLocation))
-            mapFrag?.saveLocationFab?.visibility = View.VISIBLE
+            contactMapFrag?.saveLocationFab?.visibility = View.VISIBLE
         }
         val cameraPosition = CameraPosition.Builder()
                 .target(startLocation)
@@ -171,12 +181,13 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
                 .build()
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
         map.setOnMapClickListener(onMapClickListener)
+        map.setOnMarkerClickListener { true } // отключает стандартную реакцию на щелчок по маркеру
         mapReady = true
     }
 
     private val onMapClickListener = GoogleMap.OnMapClickListener { point ->
         if (mapReady) {
-            mapFrag?.geocodingProgressBar?.visibility = View.VISIBLE
+            contactMapFrag?.geocodingProgressBar?.visibility = View.VISIBLE
             if (::curContactMarker.isInitialized) curContactMarker.remove()
             curContactMarker = map.addMarker(MarkerOptions().position(point))
             contactLocationsViewModel.setChangedLocationData(
@@ -186,13 +197,13 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
                             // Временное значение адреса, потом заменится на найденое геокодингом
                             address = GEOCODING_IN_PROGRESS_SYMBOL
                     ))
-            mapFrag?.saveLocationFab?.visibility = View.VISIBLE
+            contactMapFrag?.saveLocationFab?.visibility = View.VISIBLE
 
         }
     }
 
     private fun saveChangedLocationData() {
-        mapFrag?.saveLocationFab?.visibility = View.GONE
+        contactMapFrag?.saveLocationFab?.visibility = View.GONE
         val changedData = curChangedLocationData
         if (changedData != null) {
             curLocatedContact = curLocatedContact.copy(
@@ -208,17 +219,17 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
         }
         curChangedLocationData = null
         contactLocationsViewModel.resetChangedLocationData()
-        /*Toast.makeText(
+        Toast.makeText(
                 context,
                 getString(R.string.location_saved_msg),
                 Toast.LENGTH_LONG
-        ).show()*/
-        requireActivity().supportFragmentManager.popBackStack()
+        ).show()
+        //requireActivity().supportFragmentManager.popBackStack()
     }
 
     private fun coordinatesToString(latitude: Double, longitude: Double) = "$latitude : $longitude"
 
-    companion object {
+    /*companion object {
         private const val CONTACT_ID = "id"
         val FRAGMENT_NAME: String = ContactMapFragment::class.java.name
 
@@ -229,11 +240,11 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
                         putString(CONTACT_ID, contactId)
                     }
                 }
-    }
+    }*/
 }
 
 // Настройки карты:
-object MapSettings {
+object ContactMapSettings {
     // Место, которое показывается на карте, если координаты еще не назначены (Ижевск)
     val START_LOCATION = LatLng(56.851, 53.214)
 
@@ -242,8 +253,4 @@ object MapSettings {
 
     // Угол наклона карты к наблюдателю
     const val MAP_TILT = 40F
-
-    // Для режима показа нескольких маркеров одновременно - внутренние поля прямоугольной области,
-    // содержащей эти маркеры (в dp)
-    const val MAP_MARKERS_PADDING = 90
 }

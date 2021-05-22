@@ -1,6 +1,7 @@
 package ru.yodata.library.utils
 
 import android.net.Uri
+import java.io.Serializable
 import java.util.*
 
 object Constants {
@@ -25,12 +26,18 @@ object Constants {
                         minute = time.get(Calendar.MINUTE),
                         second = time.get(Calendar.SECOND)
                 )
-    }
+            }
 
 }
 
 data class AlarmStartTime(
-    val hour: Int,
-    val minute: Int,
-    val second: Int
+        val hour: Int,
+        val minute: Int,
+        val second: Int
 )
+
+enum class MapScreenMode : Serializable {
+    CONTACT,
+    ROUTE,
+    EVERYBODY
+}

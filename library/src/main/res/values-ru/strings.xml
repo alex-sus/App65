@@ -39,4 +39,9 @@
     <string name="point_location_msg">Укажите точку на карте!</string>
     <string name="location_saved_msg">Местоположение сохранено</string>
     <string name="address_not_defined_msg">Адрес не определен</string>
+    <string name="single_map_menu_label">Локация</string>
+    <string name="route_map_menu_label">Маршрут</string>
+    <string name="everybody_map_menu_label">Все</string>
+    <string name="everybody_location_screen_title">Все контакты</string>
+    <string name="everybody_toolbar_btn_title">Все</string>
 </resources>

@@ -47,6 +47,7 @@ class ContactLocationsViewModel @Inject constructor(
     fun setChangedLocationData(locationData: LocationData) {
         changedLocationData.value = locationData
         reverseGeocoding(locationData.latitude, locationData.longitude, yandexGeocoderApiKey)
+        Log.d(TAG, "ContactLocationsViewModel: изменение положения маркера записано")
     }
 
     fun resetChangedLocationData() {

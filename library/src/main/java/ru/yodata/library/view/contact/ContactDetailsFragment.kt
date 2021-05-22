@@ -1,4 +1,4 @@
-package ru.yodata.library.view
+package ru.yodata.library.view.contact
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -20,8 +20,10 @@ import ru.yodata.library.di.HasAppComponent
 import ru.yodata.library.utils.Constants
 import ru.yodata.library.utils.Constants.EMPTY_VALUE
 import ru.yodata.library.utils.Constants.TAG
+import ru.yodata.library.utils.MapScreenMode
 import ru.yodata.library.utils.alarmbroadcast.BirthdayAlarmReceiver
 import ru.yodata.library.utils.injectViewModel
+import ru.yodata.library.view.map.OnMapFragmentCallback
 import ru.yodata.library.viewmodel.ContactDetailsViewModel
 import java.util.*
 import javax.inject.Inject
@@ -71,7 +73,7 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
         (activity as AppCompatActivity).supportActionBar?.title =
             getString(R.string.contact_details_fragment_title)
         detailsFrag?.toMapFragmentFab?.setOnClickListener {
-            navigateCallback?.navigateToMapFragment(contactId)
+            navigateCallback?.navigateToBaseMapFragment(contactId, MapScreenMode.CONTACT)
         }
         contactDetailsViewModel.getContactById(contactId)
             .observe(viewLifecycleOwner, { curContact ->

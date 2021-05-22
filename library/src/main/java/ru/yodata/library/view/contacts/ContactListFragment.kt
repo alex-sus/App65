@@ -1,4 +1,4 @@
-package ru.yodata.library.view
+package ru.yodata.library.view.contacts
 
 import android.content.Context
 import android.os.Bundle

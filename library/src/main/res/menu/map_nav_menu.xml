@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/singleItem"
+        android:icon="@drawable/ic_baseline_place_24"
+        android:title="@string/single_map_menu_label" />
+    <item
+        android:id="@+id/routeItem"
+        android:icon="@drawable/ic_baseline_moving_24"
+        android:title="@string/route_map_menu_label" />
+    <item
+        android:id="@+id/everybodyItem"
+        android:icon="@drawable/ic_baseline_groups_24"
+        android:title="@string/everybody_map_menu_label" />
+</menu>
