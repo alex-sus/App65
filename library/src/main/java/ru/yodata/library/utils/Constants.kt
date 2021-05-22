@@ -11,18 +11,20 @@ object Constants {
     const val ALARM_SECOND_SHIFT = 50 // Для отладки: сдвиг от текущего времени в секундах
     const val CHANNEL_ID = "ru.yodata.app65" // id канала нотификаций
     const val ANDROID_RESOURCE = "android.resource://"
+    const val BASE_API_URL = "https://geocode-maps.yandex.ru/" // для Retrofit
+    const val GEOCODING_IN_PROGRESS_SYMBOL = "..." // Значение поля адреса, пока не сработал геокодинг
     const val EMPTY_VALUE = "-"
     lateinit var notificationSound: Uri // звук нотификации
 
     // Время, в которое будет стартовать напоминание о дне рождения.
     // Время автоматически задается текущее плюс количество секунд в ALARM_SECOND_SHIFT
     var alarmStartTime = Calendar.getInstance().apply { add(Calendar.SECOND, ALARM_SECOND_SHIFT) }
-        .let { time ->
-            AlarmStartTime(
-                hour = time.get(Calendar.HOUR),
-                minute = time.get(Calendar.MINUTE),
-                second = time.get(Calendar.SECOND)
-            )
+            .let { time ->
+                AlarmStartTime(
+                        hour = time.get(Calendar.HOUR),
+                        minute = time.get(Calendar.MINUTE),
+                        second = time.get(Calendar.SECOND)
+                )
     }
 
 }
