@@ -21,6 +21,7 @@ class ContactDetailsViewModel @Inject constructor(
 
     override fun onCleared() {
         Log.d(Constants.TAG, "ContactDetailsViewModel уничтожена")
+        
         super.onCleared()
     }
 
