@@ -2,6 +2,7 @@ package ru.yodata.library.view.map
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -32,17 +33,10 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     lateinit var everybodyMapViewModel: EverybodyMapViewModel
-
-    //lateinit var mapMenuView: BottomNavigationView
-    /*private val curContactId: String by lazy {
-        requireArguments().getString(CONTACT_ID, "")
-    }*/
     private lateinit var curContactId: String
     private lateinit var locatedContactList: List<LocatedContact>
     private lateinit var curLocatedContact: LocatedContact
     private lateinit var map: GoogleMap
-
-    //private var mapReady = false
     private lateinit var curContactMarker: Marker
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,6 +73,14 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
                         }
                         mapFragment?.getMapAsync(onMapReadyCallback)
                         showLocatedContactDetails(curLocatedContact)
+                    } else { // пока нет ни одного контакта с координатами в БД - нечего отображать
+                        everybodyMapFrag?.curContactGroup?.visibility = View.INVISIBLE
+                        Toast.makeText(
+                                context,
+                                getString(R.string.not_enough_contact_locations_msg),
+                                Toast.LENGTH_LONG
+                        ).show()
+
                     }
                 })
     }
@@ -156,33 +158,14 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
         }
     }
 
-    private fun locatedContactListLatLngBounds(locatedList: List<LocatedContact>): LatLngBounds {
-        var southwest = LatLng(locatedList[0].latitude, locatedList[0].longitude)
-        var northeast = southwest
-        if (locatedList.size > 1) {
-            locatedList.forEach {
-                southwest = LatLng(it.latitude.coerceAtMost(southwest.latitude),
-                        it.longitude.coerceAtMost(southwest.longitude))
-                northeast = LatLng(it.latitude.coerceAtLeast(northeast.latitude),
-                        it.longitude.coerceAtLeast(northeast.longitude))
-            }
-        }
-        return LatLngBounds(southwest, northeast)
-    }
-
-    /*companion object {
-        private const val CONTACT_ID = "id"
-        private const val SCREEN_MODE = "mode"
-        val FRAGMENT_NAME: String = EverybodyMapFragment::class.java.name
-
-        @JvmStatic
-        fun newInstance(contactId: String) =
-                EverybodyMapFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(CONTACT_ID, contactId)
-                    }
+    private fun locatedContactListLatLngBounds(locatedList: List<LocatedContact>) =
+            LatLngBounds.Builder().let { builder ->
+                locatedList.forEach {
+                    builder.include(LatLng(it.latitude, it.longitude))
                 }
-    }*/
+                builder.build()
+            }
+
 }
 
 // Настройки карты:

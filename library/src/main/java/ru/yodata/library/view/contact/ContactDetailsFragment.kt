@@ -71,36 +71,47 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
         super.onViewCreated(view, savedInstanceState)
         detailsFrag = FragmentContactDetailsBinding.bind(view)
         (activity as AppCompatActivity).supportActionBar?.title =
-            getString(R.string.contact_details_fragment_title)
+                getString(R.string.contact_details_fragment_title)
         detailsFrag?.toMapFragmentFab?.setOnClickListener {
             navigateCallback?.navigateToBaseMapFragment(contactId, MapScreenMode.CONTACT)
         }
+        detailsFrag?.deleteLocationDataFab?.setOnClickListener(deleteLocationDataFabListener)
+        // Обзервер для данных текущего контакта, не включая данные о его местоположении
         contactDetailsViewModel.getContactById(contactId)
-            .observe(viewLifecycleOwner, { curContact ->
-                if (curContact != null) {
-                    try {
-                        showContactDetails(curContact)
-                        detailsFrag?.remindBtn?.setOnCheckedChangeListener { buttonView, isChecked ->
-                            if (isChecked) alarmHelper.setBirthdayAlarm(curContact)
-                            else alarmHelper.cancelBirthdayAlarm(curContact)
-                        }
-                    } catch (e: IllegalStateException) {
-                        Log.d(TAG, "Исключение в ContactDetailsFragment: ")
-                        Log.d(TAG, e.stackTraceToString())
-                    }
-                }
-            })
-        contactDetailsViewModel.getLocationDataById(contactId)
-                .observe(viewLifecycleOwner, { curLocation ->
-                    if (curLocation != null) {
+                .observe(viewLifecycleOwner, { curContact ->
+                    if (curContact != null) {
                         try {
-                            showLocationData(curLocation)
+                            showContactDetails(curContact)
+                            detailsFrag?.remindBtn?.setOnCheckedChangeListener { buttonView, isChecked ->
+                                if (isChecked) alarmHelper.setBirthdayAlarm(curContact)
+                                else alarmHelper.cancelBirthdayAlarm(curContact)
+                            }
                         } catch (e: IllegalStateException) {
                             Log.d(TAG, "Исключение в ContactDetailsFragment: ")
                             Log.d(TAG, e.stackTraceToString())
                         }
                     }
                 })
+        // Обзервер данных о местоположении текущего контакта
+        contactDetailsViewModel.getLocationDataById(contactId)
+                .observe(viewLifecycleOwner, { curLocation ->
+                    try {
+                        showLocationData(curLocation)
+                    } catch (e: IllegalStateException) {
+                        Log.d(TAG, "Исключение в ContactDetailsFragment: ")
+                        Log.d(TAG, e.stackTraceToString())
+                    }
+                })
+    }
+
+    override fun onDestroyView() {
+        detailsFrag = null
+        super.onDestroyView()
+    }
+
+    override fun onDetach() {
+        navigateCallback = null
+        super.onDetach()
     }
 
     private fun showContactDetails(curContact: Contact) {
@@ -110,9 +121,9 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
                 birthdayTv.text = if (birthday != null)
                     birthday?.get(Calendar.DAY_OF_MONTH).toString() + " " +
                             birthday?.getDisplayName(
-                                Calendar.MONTH,
-                                Calendar.LONG,
-                                Locale.getDefault()
+                                    Calendar.MONTH,
+                                    Calendar.LONG,
+                                    Locale.getDefault()
                             )
                 else EMPTY_VALUE
                 phone1Tv.text = phone1
@@ -134,25 +145,30 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
         }
     }
 
-    private fun showLocationData(curLocation: LocationData) {
-        with(curLocation) {
+    private fun showLocationData(curLocation: LocationData?) {
+        if (curLocation != null) {
+            with(curLocation) {
+                detailsFrag?.apply {
+                    latitudeTv.text = latitude.toString()
+                    longitudeTv.text = longitude.toString()
+                    addressTv.text = address
+                    deleteLocationDataFab.visibility = View.VISIBLE
+                }
+            }
+        } else {
             detailsFrag?.apply {
-                latitudeTv.text = latitude.toString()
-                longitudeTv.text = longitude.toString()
-                addressTv.text = address
+                latitudeTv.text = ""
+                longitudeTv.text = ""
+                addressTv.text = ""
             }
         }
     }
 
-    override fun onDestroyView() {
-        detailsFrag = null
-        super.onDestroyView()
+    private val deleteLocationDataFabListener = View.OnClickListener {
+        detailsFrag?.deleteLocationDataFab?.visibility = View.GONE
+        contactDetailsViewModel.deleteLocationDataById(contactId)
     }
 
-    override fun onDetach() {
-        navigateCallback = null
-        super.onDetach()
-    }
 
     companion object {
 

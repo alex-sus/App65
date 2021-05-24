@@ -94,20 +94,19 @@ class ContactLocationsViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                changedLocationData.postValue(
+                changedLocationData.value =
                         changedLocationData.value?.copy(
                                 address = interactor.reverseGeocoding(
                                         latitude = latitude,
                                         longitude = longitude,
                                         apikey = apikey
-                                ))
-                )
+                                )
+                        )
             } catch (e: Throwable) {
                 Log.d(TAG, e.stackTraceToString())
-                changedLocationData.postValue(
+                changedLocationData.value =
                         changedLocationData.value?.copy(
                                 address = appContext.getString(R.string.address_not_defined_msg))
-                )
             }
         }
     }

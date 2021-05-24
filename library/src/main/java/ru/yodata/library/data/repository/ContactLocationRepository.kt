@@ -8,7 +8,7 @@ import ru.yodata.java.entities.LocationData
 import ru.yodata.java.interactors.ContactLocationRepositoryInterface
 import ru.yodata.java.interactors.ContactRepositoryInterface
 import ru.yodata.library.data.room.database.ContactLocationDatabase
-import ru.yodata.library.data.room.entity.ContactLocationEntity
+import ru.yodata.library.data.room.entity.toDatabase
 import ru.yodata.library.utils.Constants.TAG
 
 class ContactLocationRepository(
@@ -49,7 +49,7 @@ class ContactLocationRepository(
                         // нашего приложения. Такие ложные элементы в список не вносить,
                         // а из БД удалить.
                         else {
-                            db.contactLocationDao().deleteContactLocationById(it.contactId)
+                            deleteLocationDataById(it.contactId)
                             Log.d(TAG, "ContactLocationRepository: из БД удален "
                                     + "несуществующий контакт id = ${it.contactId}"
                                     + " address = ${it.address}")
@@ -61,28 +61,20 @@ class ContactLocationRepository(
 
     override suspend fun addContactLocation(locatedContact: LocatedContact) {
         withContext(Dispatchers.IO) {
-            db.contactLocationDao().insertContactLocation(
-                    mapLocatedContactToContactLocationEntity(locatedContact)
-            )
+            db.contactLocationDao().insertContactLocation(locatedContact.toDatabase())
         }
     }
 
     override suspend fun updateContactLocation(locatedContact: LocatedContact) {
         withContext(Dispatchers.IO) {
-            db.contactLocationDao().updateContactLocation(
-                    mapLocatedContactToContactLocationEntity(locatedContact)
-            )
+            db.contactLocationDao().updateContactLocation(locatedContact.toDatabase())
         }
     }
 
-    private fun mapLocatedContactToContactLocationEntity(locatedContact: LocatedContact)
-            : ContactLocationEntity =
-            with(locatedContact) {
-                ContactLocationEntity(
-                        contactId = id,
-                        latitude = latitude,
-                        longitude = longitude,
-                        address = address
-                )
-            }
+    override suspend fun deleteLocationDataById(contactId: String) {
+        withContext(Dispatchers.IO) {
+            db.contactLocationDao().deleteContactLocationById(contactId)
+        }
+    }
+
 }

@@ -8,4 +8,6 @@ interface ContactDetailsInteractor {
     suspend fun getContactById(contactId: String): Contact
 
     suspend fun getLocationDataById(contactId: String): LocationData?
+
+    suspend fun deleteLocationDataById(contactId: String)
 }

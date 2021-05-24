@@ -161,6 +161,19 @@
         app:layout_constraintTop_toTopOf="@+id/map"
         tools:visibility="visible" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addRouteDestinationFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:layout_marginEnd="@dimen/normal_horizontal_gap"
+        android:clickable="true"
+        android:src="@drawable/ic_baseline_person_add_24"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/map"
+        app:layout_constraintTop_toTopOf="@+id/map"
+        tools:visibility="visible" />
+
     <TextView
         android:id="@+id/curNameTv"
         style="@style/LargeValueStyle"
@@ -294,6 +307,7 @@
         style="@style/CommonValueStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/normal_horizontal_gap"
         android:layout_marginTop="@dimen/small_vertical_gap"
         android:text="@string/route_label"
         app:layout_constraintStart_toStartOf="parent"

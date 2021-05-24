@@ -12,4 +12,6 @@ interface ContactLocationRepositoryInterface {
     suspend fun addContactLocation(locatedContact: LocatedContact)
 
     suspend fun updateContactLocation(locatedContact: LocatedContact)
+
+    suspend fun deleteLocationDataById(contactId: String)
 }

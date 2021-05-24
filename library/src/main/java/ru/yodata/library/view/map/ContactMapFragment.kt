@@ -228,20 +228,6 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
         //requireActivity().supportFragmentManager.popBackStack()
     }
 
-    private fun coordinatesToString(latitude: Double, longitude: Double) = "$latitude : $longitude"
-
-    /*companion object {
-        private const val CONTACT_ID = "id"
-        val FRAGMENT_NAME: String = ContactMapFragment::class.java.name
-
-        @JvmStatic
-        fun newInstance(contactId: String) =
-                ContactMapFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(CONTACT_ID, contactId)
-                    }
-                }
-    }*/
 }
 
 // Настройки карты:

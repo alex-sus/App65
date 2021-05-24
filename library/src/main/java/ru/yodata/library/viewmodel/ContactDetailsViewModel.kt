@@ -36,15 +36,22 @@ class ContactDetailsViewModel @Inject constructor(
         return locationData
     }
 
+    fun deleteLocationDataById(contactId: String) {
+        viewModelScope.launch {
+            interactor.deleteLocationDataById(contactId)
+        }
+        locationData.value = null
+    }
+
     private fun loadContactDetail(contactId: String) {
         viewModelScope.launch {
-            interactor.getContactById(contactId).also { contact.postValue(it) }
+            interactor.getContactById(contactId).also { contact.value = it }
         }
     }
 
     private fun loadLocationData(contactId: String) {
         viewModelScope.launch {
-            interactor.getLocationDataById(contactId).also { locationData.postValue(it) }
+            interactor.getLocationDataById(contactId).also { locationData.value = it }
         }
     }
 

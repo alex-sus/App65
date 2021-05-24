@@ -46,4 +46,7 @@
     <string name="everybody_toolbar_btn_title">Все</string>
     <string name="route_label">Маршрут:</string>
     <string name="route_screen_title">Маршрут между контактами</string>
+    <string name="not_enough_contact_locations_msg">Недостаточно контактов с локациями. Добавьте локации</string>
+    <string name="no_route_msg">не найден</string>
+    <string name="contact_name_dialog_title">Выберите цель маршрута:</string>
 </resources>

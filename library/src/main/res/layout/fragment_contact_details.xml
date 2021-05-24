@@ -283,8 +283,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/normal_horizontal_gap"
         android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:layout_marginEnd="@dimen/normal_horizontal_gap"
         android:singleLine="false"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/deleteLocationDataFab"
         app:layout_constraintStart_toEndOf="@+id/addressLabel"
         app:layout_constraintTop_toBottomOf="@+id/longitudeLabel"
         tools:text="г.Ижевск, ул.Удмуртская, 164-28" />
@@ -301,6 +302,19 @@
         app:layout_constraintBottom_toTopOf="@+id/addressTv"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_baseline_place_24" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/deleteLocationDataFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_vertical_gap"
+        android:layout_marginEnd="@dimen/normal_horizontal_gap"
+        android:clickable="true"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toMapFragmentFab"
+        app:srcCompat="@android:drawable/ic_delete"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

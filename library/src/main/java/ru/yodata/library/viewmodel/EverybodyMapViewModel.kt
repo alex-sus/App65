@@ -31,7 +31,7 @@ class EverybodyMapViewModel @Inject constructor(
     private fun loadLocatedContactList() {
         Log.d(TAG, "EverybodyMapViewModel: начинаю запрос координат контактов...")
         viewModelScope.launch {
-            locatedContactList.postValue(interactor.getLocatedContactList() ?: emptyList())
+            locatedContactList.value = interactor.getLocatedContactList() ?: emptyList()
             Log.d(TAG, "EverybodyMapViewModel: координаты контактов получены.")
         }
     }
