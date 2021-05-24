@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import ru.yodata.java.entities.BriefContact
 import ru.yodata.java.entities.LocatedContact
 import ru.yodata.java.entities.LocationData
-import ru.yodata.java.interactors.map.ContactMapInteractor
+import ru.yodata.java.interactors.map.contact.ContactMapInteractor
 import ru.yodata.library.R
 import ru.yodata.library.utils.Constants.TAG
 import javax.inject.Inject

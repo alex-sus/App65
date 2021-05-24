@@ -44,4 +44,6 @@
     <string name="everybody_map_menu_label">Все</string>
     <string name="everybody_location_screen_title">Все контакты</string>
     <string name="everybody_toolbar_btn_title">Все</string>
+    <string name="route_label">Маршрут:</string>
+    <string name="route_screen_title">Маршрут между контактами</string>
 </resources>

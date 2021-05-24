@@ -44,4 +44,6 @@
     <string name="everybody_map_menu_label">All</string>
     <string name="everybody_location_screen_title">All contacts location</string>
     <string name="everybody_toolbar_btn_title">All</string>
+    <string name="route_label">Route:</string>
+    <string name="route_screen_title">Route between contacts</string>
 </resources>

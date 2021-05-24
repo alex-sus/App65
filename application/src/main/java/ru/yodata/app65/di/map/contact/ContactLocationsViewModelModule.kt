@@ -1,4 +1,4 @@
-package ru.yodata.app65.di.map
+package ru.yodata.app65.di.map.contact
 
 import androidx.lifecycle.ViewModel
 import dagger.Binds

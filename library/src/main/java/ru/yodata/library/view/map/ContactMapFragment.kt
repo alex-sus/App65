@@ -187,6 +187,7 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
 
     private val onMapClickListener = GoogleMap.OnMapClickListener { point ->
         if (mapReady) {
+            Log.d(TAG, "ContactMapFragment:onMapClickListener есть клик по карте")
             contactMapFrag?.geocodingProgressBar?.visibility = View.VISIBLE
             if (::curContactMarker.isInitialized) curContactMarker.remove()
             curContactMarker = map.addMarker(MarkerOptions().position(point))

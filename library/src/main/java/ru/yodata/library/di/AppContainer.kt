@@ -5,4 +5,5 @@ interface AppContainer {
     fun plusContactDetailsContainer(): ContactDetailsContainer
     fun plusContactMapContainer(): ContactMapContainer
     fun plusEverybodyMapContainer(): EverybodyMapContainer
+    fun plusRouteMapContainer(): RouteMapContainer
 }

@@ -1,12 +1,12 @@
-package ru.yodata.app65.di.map
+package ru.yodata.app65.di.map.contact
 
 import dagger.Module
 import dagger.Provides
 import ru.yodata.java.interactors.ContactLocationRepositoryInterface
 import ru.yodata.java.interactors.ContactRepositoryInterface
 import ru.yodata.java.interactors.YandexGeocoderRepositoryInterface
-import ru.yodata.java.interactors.map.ContactMapInteractor
-import ru.yodata.java.interactors.map.ContactMapModel
+import ru.yodata.java.interactors.map.contact.ContactMapInteractor
+import ru.yodata.java.interactors.map.contact.ContactMapModel
 
 @Module
 class ContactMapModule {

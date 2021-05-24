@@ -1,4 +1,4 @@
-package ru.yodata.app65.di.map
+package ru.yodata.app65.di.map.contact
 
 import dagger.Subcomponent
 import ru.yodata.library.di.ContactMapContainer

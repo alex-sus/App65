@@ -60,7 +60,11 @@ class BaseMapFragment : Fragment() {
                         return@OnNavigationItemSelectedListener true
                     }
                     R.id.routeItem -> {
-
+                        this.arguments = Bundle().apply {
+                            putString(CONTACT_ID, requireArguments().getString(CONTACT_ID, ""))
+                            putSerializable(SCREEN_MODE, MapScreenMode.ROUTE)
+                        }
+                        openSelectedFragment(RouteMapFragment())
                         return@OnNavigationItemSelectedListener true
                     }
                     R.id.everybodyItem -> {
@@ -85,9 +89,9 @@ class BaseMapFragment : Fragment() {
                 .commit()
     }
 
-    private fun getCurrentContactId(): String =
+    /*private fun getCurrentContactId(): String =
             requireArguments().getString(CONTACT_ID, "")
-
+*/
     companion object {
         private const val CONTACT_ID = "id"
         private const val SCREEN_MODE = "mode"

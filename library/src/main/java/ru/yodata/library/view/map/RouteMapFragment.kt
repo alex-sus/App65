@@ -6,37 +6,33 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import ru.yodata.java.entities.LocatedContact
 import ru.yodata.library.R
 import ru.yodata.library.databinding.FragmentContactMapBinding
 import ru.yodata.library.di.HasAppComponent
 import ru.yodata.library.utils.MapScreenMode
 import ru.yodata.library.utils.injectViewModel
-import ru.yodata.library.view.map.EverybodyMapSettings.COMMON_MARKERS_COLOR
-import ru.yodata.library.view.map.EverybodyMapSettings.MAP_MARKERS_PADDING
-import ru.yodata.library.viewmodel.EverybodyMapViewModel
+import ru.yodata.library.viewmodel.RouteMapViewModel
 import javax.inject.Inject
 
 private const val CONTACT_ID = "id"
 private const val SCREEN_MODE = "mode"
 
-class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
+class RouteMapFragment : Fragment(R.layout.fragment_contact_map) {
 
-    private var everybodyMapFrag: FragmentContactMapBinding? = null
+    private var routeMapFrag: FragmentContactMapBinding? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    lateinit var everybodyMapViewModel: EverybodyMapViewModel
+    lateinit var routeMapViewModel: RouteMapViewModel
 
-    //lateinit var mapMenuView: BottomNavigationView
-    /*private val curContactId: String by lazy {
-        requireArguments().getString(CONTACT_ID, "")
-    }*/
     private lateinit var curContactId: String
     private lateinit var locatedContactList: List<LocatedContact>
     private lateinit var curLocatedContact: LocatedContact
@@ -49,19 +45,19 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
         super.onCreate(savedInstanceState)
         (requireActivity().application as? HasAppComponent)
                 ?.getAppComponent()
-                ?.plusEverybodyMapContainer()
+                ?.plusRouteMapContainer()
                 ?.inject(this)
-        everybodyMapViewModel = injectViewModel(viewModelFactory)
+        routeMapViewModel = injectViewModel(viewModelFactory)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        everybodyMapFrag = FragmentContactMapBinding.bind(view)
+        routeMapFrag = FragmentContactMapBinding.bind(view)
         (activity as AppCompatActivity).supportActionBar?.title =
-                getString(R.string.everybody_location_screen_title)
+                getString(R.string.route_screen_title)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         curContactId = parentFragment?.arguments?.getString(CONTACT_ID, "") ?: ""
-        everybodyMapViewModel.getLocatedContactList()
+        routeMapViewModel.getLocatedContactList()
                 .observe(viewLifecycleOwner, {
                     locatedContactList = it
                     if (locatedContactList.isNotEmpty()) {
@@ -75,7 +71,7 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
                         curContactId = curLocatedContact.id
                         parentFragment?.arguments = Bundle().apply {
                             putString(CONTACT_ID, curContactId)
-                            putSerializable(SCREEN_MODE, MapScreenMode.EVERYBODY)
+                            putSerializable(SCREEN_MODE, MapScreenMode.ROUTE)
                         }
                         mapFragment?.getMapAsync(onMapReadyCallback)
                         showLocatedContactDetails(curLocatedContact)
@@ -84,7 +80,7 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
     }
 
     override fun onDestroyView() {
-        everybodyMapFrag = null
+        routeMapFrag = null
         super.onDestroyView()
     }
 
@@ -97,7 +93,7 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
                 .position(curLocation)
                 .snippet(curLocatedContact.id)
         )
-        if (locatedContactList.size == 1) {
+        /*if (locatedContactList.size == 1) {
             val cameraPosition = CameraPosition.Builder()
                     .target(curLocation)
                     .zoom(ContactMapSettings.MAP_ZOOM)
@@ -110,39 +106,23 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
                     map.addMarker(MarkerOptions()
                             .position(LatLng(it.latitude, it.longitude))
                             .snippet(it.id)
-                            .icon(BitmapDescriptorFactory.defaultMarker(COMMON_MARKERS_COLOR))
+                            .icon(BitmapDescriptorFactory.defaultMarker(EverybodyMapSettings.COMMON_MARKERS_COLOR))
                     )
                 }
             }
             map.moveCamera(CameraUpdateFactory
                     .newLatLngBounds(
                             locatedContactListLatLngBounds(locatedContactList),
-                            MAP_MARKERS_PADDING
+                            EverybodyMapSettings.MAP_MARKERS_PADDING
                     )
             )
-        }
-        map.setOnMarkerClickListener(onMarkerClickListener)
+        }*/
+        map.setOnMarkerClickListener { true }
     }
 
-    private val onMarkerClickListener = GoogleMap.OnMarkerClickListener { newMarker ->
-        if (newMarker != curContactMarker) {
-            curContactMarker.setIcon(BitmapDescriptorFactory.defaultMarker(COMMON_MARKERS_COLOR))
-            curContactMarker = newMarker
-            curContactMarker.setIcon(BitmapDescriptorFactory.defaultMarker())
-            curLocatedContact = locatedContactList.first { it.id == curContactMarker.snippet }
-            showLocatedContactDetails(curLocatedContact)
-            curContactId = curLocatedContact.id
-            parentFragment?.arguments = Bundle().apply {
-                putString(CONTACT_ID, curContactId)
-                putSerializable(SCREEN_MODE, MapScreenMode.EVERYBODY)
-            }
-        }
-        true // если тут будет false, то карта будет отцентрована по этому маркеру, что нам не нужно
-    }
-
-    fun showLocatedContactDetails(locatedContact: LocatedContact) {
+    private fun showLocatedContactDetails(locatedContact: LocatedContact) {
         with(locatedContact) {
-            everybodyMapFrag?.apply {
+            routeMapFrag?.apply {
                 curNameTv.text = name
                 if (!photoUri.isNullOrEmpty()) {
                     curPhotoIv.setImageURI(photoUri?.toUri())
@@ -155,38 +135,10 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
             }
         }
     }
-
-    private fun locatedContactListLatLngBounds(locatedList: List<LocatedContact>): LatLngBounds {
-        var southwest = LatLng(locatedList[0].latitude, locatedList[0].longitude)
-        var northeast = southwest
-        if (locatedList.size > 1) {
-            locatedList.forEach {
-                southwest = LatLng(it.latitude.coerceAtMost(southwest.latitude),
-                        it.longitude.coerceAtMost(southwest.longitude))
-                northeast = LatLng(it.latitude.coerceAtLeast(northeast.latitude),
-                        it.longitude.coerceAtLeast(northeast.longitude))
-            }
-        }
-        return LatLngBounds(southwest, northeast)
-    }
-
-    /*companion object {
-        private const val CONTACT_ID = "id"
-        private const val SCREEN_MODE = "mode"
-        val FRAGMENT_NAME: String = EverybodyMapFragment::class.java.name
-
-        @JvmStatic
-        fun newInstance(contactId: String) =
-                EverybodyMapFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(CONTACT_ID, contactId)
-                    }
-                }
-    }*/
 }
 
 // Настройки карты:
-object EverybodyMapSettings {
+object RouteMapSettings {
 
     // Масштаб изображения карты
     const val MAP_ZOOM = 13F

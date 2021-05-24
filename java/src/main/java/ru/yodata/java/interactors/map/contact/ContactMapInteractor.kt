@@ -1,4 +1,4 @@
-package ru.yodata.java.interactors.map
+package ru.yodata.java.interactors.map.contact
 
 import ru.yodata.java.entities.BriefContact
 import ru.yodata.java.entities.LocatedContact
