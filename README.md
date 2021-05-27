@@ -32,3 +32,6 @@
 
 03/05/2021 Домашнее задание №10 - Произведен рефакторинг на Clean Architecture с разбивкой
             приложения на 3 gradle-модуля.
+            
+APK-файл курсовой работы:
+https://github.com/alex-sus/App65-APK/blob/main/application-debug.apk
