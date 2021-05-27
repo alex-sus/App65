@@ -15,4 +15,8 @@ class ContactDetailsModel(
 
     override suspend fun getLocationDataById(contactId: String): LocationData? =
             locationRepository.getLocationDataById(contactId)
+
+    override suspend fun deleteLocationDataById(contactId: String) {
+        locationRepository.deleteLocationDataById(contactId)
+    }
 }

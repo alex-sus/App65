@@ -7,4 +7,19 @@ data class LocatedContact(
         val latitude: Double,
         val longitude: Double,
         val address: String
-)
+) {
+        override fun toString(): String {
+                return name
+        }
+
+        /*fun LocatedContact.toDatabase(locatedContact: LocatedContact)
+                : ContactLocationEntity =
+                with(locatedContact) {
+                        ContactLocationEntity(
+                                contactId = id,
+                                latitude = latitude,
+                                longitude = longitude,
+                                address = address
+                        )
+                }*/
+}

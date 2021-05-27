@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import ru.yodata.java.entities.BriefContact
 import ru.yodata.java.entities.LocatedContact
 import ru.yodata.java.entities.LocationData
-import ru.yodata.java.interactors.map.ContactMapInteractor
+import ru.yodata.java.interactors.map.contact.ContactMapInteractor
 import ru.yodata.library.R
 import ru.yodata.library.utils.Constants.TAG
 import javax.inject.Inject
@@ -47,6 +47,7 @@ class ContactLocationsViewModel @Inject constructor(
     fun setChangedLocationData(locationData: LocationData) {
         changedLocationData.value = locationData
         reverseGeocoding(locationData.latitude, locationData.longitude, yandexGeocoderApiKey)
+        Log.d(TAG, "ContactLocationsViewModel: изменение положения маркера записано")
     }
 
     fun resetChangedLocationData() {
@@ -93,20 +94,19 @@ class ContactLocationsViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                changedLocationData.postValue(
+                changedLocationData.value =
                         changedLocationData.value?.copy(
                                 address = interactor.reverseGeocoding(
                                         latitude = latitude,
                                         longitude = longitude,
                                         apikey = apikey
-                                ))
-                )
+                                )
+                        )
             } catch (e: Throwable) {
                 Log.d(TAG, e.stackTraceToString())
-                changedLocationData.postValue(
+                changedLocationData.value =
                         changedLocationData.value?.copy(
                                 address = appContext.getString(R.string.address_not_defined_msg))
-                )
             }
         }
     }

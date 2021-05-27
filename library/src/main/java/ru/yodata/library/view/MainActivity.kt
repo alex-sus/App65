@@ -5,11 +5,18 @@ package ru.yodata.library.view
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import ru.yodata.library.R
 import ru.yodata.library.utils.Constants.CONTACT_ID
+import ru.yodata.library.utils.MapScreenMode
 import ru.yodata.library.utils.PermissionsAccessHelper.isPermissionsRequestSuccessful
 import ru.yodata.library.utils.PermissionsAccessHelper.startPermissionsRequest
+import ru.yodata.library.view.contact.ContactDetailsFragment
+import ru.yodata.library.view.contacts.ContactListFragment
+import ru.yodata.library.view.contacts.OnContactListCallback
+import ru.yodata.library.view.map.BaseMapFragment
+import ru.yodata.library.view.map.OnMapFragmentCallback
 
 // Значение интента при старте активити по ярлыку на экране
 private const val LAUNCHER_START_INTENT = "android.intent.action.MAIN"
@@ -47,17 +54,23 @@ class MainActivity : AppCompatActivity(), OnContactListCallback, OnMapFragmentCa
         if (isPermissionsRequestSuccessful(
                         activity = this,
                         showEpilogue = true
-            )
+                )
         ) {
             chooseNavigation()
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.everybodyToolbarBtn) {
+            navigateToBaseMapFragment("", MapScreenMode.EVERYBODY)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun chooseNavigation() {
         if (!activityStartedByNotification) {
             navigateToContactListFragment()
-        }
-        else {
+        } else {
             val contactId = curIntent.getStringExtra(CONTACT_ID)
             if (!contactId.isNullOrEmpty()) {
                 navigateToContactDetailsFragment(contactId)
@@ -86,15 +99,15 @@ class MainActivity : AppCompatActivity(), OnContactListCallback, OnMapFragmentCa
         transaction.commit()
     }
 
-    override fun navigateToMapFragment(contactId: String) {
+    override fun navigateToBaseMapFragment(contactId: String, screenMode: MapScreenMode) {
         supportFragmentManager.beginTransaction()
                 .replace(
                         R.id.frag_container,
-                        ContactMapFragment.newInstance(contactId),
-                        ContactMapFragment.FRAGMENT_NAME
+                        BaseMapFragment.newInstance(contactId, screenMode),
+                        BaseMapFragment.FRAGMENT_NAME
                 )
-                .addToBackStack(ContactMapFragment.FRAGMENT_NAME)
-            .commit()
+                .addToBackStack(BaseMapFragment.FRAGMENT_NAME)
+                .commit()
     }
 
 }

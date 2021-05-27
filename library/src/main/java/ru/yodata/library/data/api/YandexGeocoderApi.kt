@@ -2,7 +2,7 @@ package ru.yodata.library.data.api
 
 import retrofit2.http.GET
 import retrofit2.http.Query
-import ru.yodata.library.data.yandex_geocoder_dto.YandexGeocoderResponse
+import ru.yodata.library.data.dto.yandex_geocoder_dto.YandexGeocoderResponse
 
 interface YandexGeocoderApi {
 
