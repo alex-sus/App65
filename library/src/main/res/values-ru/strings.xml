@@ -30,4 +30,23 @@
     <string name="permissions_request_epilogue_cancel_btn">Нет, выйти из приложения</string>
     <string name="search_view_title">Поиск</string>
     <string name="contacts_not_found_msg">Контактов не найдено</string>
+    <string name="location_label">Местоположение:</string>
+    <string name="latitude_label">Широта:</string>
+    <string name="longitude_label">Долгота:</string>
+    <string name="address_label">Адрес:</string>
+    <string name="contact_location_screen_title">Местоположение контакта</string>
+    <string name="coordinates_label">Координаты:</string>
+    <string name="point_location_msg">Укажите точку на карте!</string>
+    <string name="location_saved_msg">Местоположение сохранено</string>
+    <string name="address_not_defined_msg">Адрес не определен</string>
+    <string name="single_map_menu_label">Локация</string>
+    <string name="route_map_menu_label">Маршрут</string>
+    <string name="everybody_map_menu_label">Все</string>
+    <string name="everybody_location_screen_title">Все контакты</string>
+    <string name="everybody_toolbar_btn_title">Все</string>
+    <string name="route_label">Маршрут:</string>
+    <string name="route_screen_title">Маршрут между контактами</string>
+    <string name="not_enough_contact_locations_msg">Недостаточно контактов с локациями. Добавьте локации</string>
+    <string name="no_route_msg">не найден</string>
+    <string name="contact_name_dialog_title">Выберите цель маршрута:</string>
 </resources>

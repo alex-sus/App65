@@ -2,8 +2,12 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/everybodyToolbarBtn"
+        android:icon="@drawable/ic_baseline_group_24"
+        android:title="@string/everybody_toolbar_btn_title"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/searchView"
-
         android:title="@string/search_view_title"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always" />
