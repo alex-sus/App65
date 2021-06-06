@@ -4,16 +4,10 @@ import android.content.ContentResolver
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import ru.yodata.java.interactors.ContactLocationRepositoryInterface
-import ru.yodata.java.interactors.ContactRepositoryInterface
-import ru.yodata.java.interactors.GoogleDirectionsRepositoryInterface
-import ru.yodata.java.interactors.YandexGeocoderRepositoryInterface
+import ru.yodata.java.interactors.*
 import ru.yodata.library.data.api.GoogleDirectionsApi
 import ru.yodata.library.data.api.YandexGeocoderApi
-import ru.yodata.library.data.repository.ContactLocationRepository
-import ru.yodata.library.data.repository.ContactRepository
-import ru.yodata.library.data.repository.GoogleDirectionsRepository
-import ru.yodata.library.data.repository.YandexGeocoderRepository
+import ru.yodata.library.data.repository.*
 import ru.yodata.library.data.room.database.ContactLocationDatabase
 import javax.inject.Singleton
 
@@ -47,5 +41,16 @@ class RepositoryModule {
     @Provides
     fun provideGoogleDirectionsRepository(api: GoogleDirectionsApi)
             : GoogleDirectionsRepositoryInterface = GoogleDirectionsRepository(api)
+
+    @Singleton
+    @Provides
+    fun provideBirthdayAlarmRepository(
+        appContext: Context
+    ): BirthdayAlarmRepositoryInterface = BirthdayAlarmRepository(appContext)
+
+    @Singleton
+    @Provides
+    fun provideAlarmCalendarRepository(): AlarmCalendarRepositoryInterface =
+        AlarmCalendarRepository()
 
 }

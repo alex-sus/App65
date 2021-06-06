@@ -43,6 +43,19 @@ class ContactDetailsViewModel @Inject constructor(
         locationData.value = null
     }
 
+    fun isBirthdayAlarmOn(curContact: Contact): Boolean =
+        interactor.isBirthdayAlarmOn(curContact)
+
+    fun setBirthdayAlarm(curContact: Contact) =
+        viewModelScope.launch {
+            interactor.setBirthdayAlarm(curContact)
+        }
+
+    fun cancelBirthdayAlarm(curContact: Contact) =
+        viewModelScope.launch {
+            interactor.cancelBirthdayAlarm(curContact)
+        }
+
     private fun loadContactDetail(contactId: String) {
         viewModelScope.launch {
             interactor.getContactById(contactId).also { contact.value = it }
@@ -54,5 +67,6 @@ class ContactDetailsViewModel @Inject constructor(
             interactor.getLocationDataById(contactId).also { locationData.value = it }
         }
     }
+
 
 }
