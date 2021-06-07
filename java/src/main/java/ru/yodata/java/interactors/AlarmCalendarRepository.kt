@@ -1,54 +1,18 @@
-package ru.yodata.java.interactors.contact
+package ru.yodata.java.interactors
 
-import ru.yodata.java.entities.Contact
-import ru.yodata.java.entities.LocationData
-import ru.yodata.java.interactors.AlarmCalendarRepositoryInterface
-import ru.yodata.java.interactors.BirthdayAlarmRepositoryInterface
-import ru.yodata.java.interactors.ContactLocationRepositoryInterface
-import ru.yodata.java.interactors.ContactRepositoryInterface
 import java.util.*
 
-private const val DAY_OF_MONTH_29 = 29
+/*private const val DAY_OF_MONTH_29 = 29
 private const val LEAP_YEAR_PERIOD = 4
 
 // Для демонстрации напоминания о ДР: сдвиг вперед от текущего времени (в секундах)
-private const val ALARM_SECOND_SHIFT = 20
+private const val ALARM_SECOND_SHIFT = 30*/
 
-class ContactDetailsModel(
-    private val contactRepository: ContactRepositoryInterface,
-    private val locationRepository: ContactLocationRepositoryInterface,
-    private val alarmRepository: BirthdayAlarmRepositoryInterface,
-    private val calendarRepository: AlarmCalendarRepositoryInterface
-) : ContactDetailsInteractor {
+class AlarmCalendarRepository : AlarmCalendarRepositoryInterface {
 
-    override suspend fun getContactById(contactId: String): Contact =
-        contactRepository.getContactById(contactId)
+    override fun now(): Calendar = Calendar.getInstance()
 
-    override suspend fun getLocationDataById(contactId: String): LocationData? =
-        locationRepository.getLocationDataById(contactId)
-
-    override suspend fun deleteLocationDataById(contactId: String) {
-        locationRepository.deleteLocationDataById(contactId)
-    }
-
-    override fun isBirthdayAlarmOn(curContact: Contact): Boolean =
-        alarmRepository.isBirthdayAlarmOn(curContact)
-
-    override suspend fun setBirthdayAlarm(curContact: Contact) {
-        if (curContact.birthday != null) {
-            alarmRepository.setBirthdayAlarm(
-                curContact,
-                getAlarmStartMomentFor(curContact.birthday)
-            )
-        }
-    }
-
-    override suspend fun cancelBirthdayAlarm(curContact: Contact) {
-        alarmRepository.cancelBirthdayAlarm(curContact)
-    }
-
-    override fun getAlarmStartMomentFor(contactBirthday: Calendar/*, today: Calendar*/): Calendar {
-        val today = calendarRepository.now()
+    /*override fun getAlarmStartMomentFor(contactBirthday: Calendar, today: Calendar): Calendar {
         val curYear = today[Calendar.YEAR]
         val alarmStartMoment = today.clone() as Calendar
         if (contactBirthday[Calendar.DAY_OF_MONTH] == DAY_OF_MONTH_29
@@ -79,5 +43,5 @@ class ContactDetailsModel(
                 alarmStartMoment[Calendar.YEAR] = curYear + 1
         }
         return alarmStartMoment
-    }
+    }*/
 }
