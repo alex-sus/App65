@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">App65</string>
     <!-- TODO: Remove or change this placeholder text -->
+    <string name="yandex_geocoder_api_key">fb8eb52d-ac46-4a56-881e-0b312fbbd55d</string>
+    <string name="google_maps_key">AIzaSyAzMLihMG3YUuJTsuwHjpSYjZeoqGKzR8E</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="phone1_label">Phone #1:</string>
     <string name="phone2_label">Phone #2:</string>

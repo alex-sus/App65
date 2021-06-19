@@ -7,7 +7,10 @@ buildscript {
     ext.gson_version = "2.8.6"
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+        /*maven {
+            url "https://plugins.gradle.org/m2/"
+        }*/
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.1'
@@ -18,13 +21,65 @@ buildscript {
     }
 }
 
+plugins {
+    id("io.gitlab.arturbosch.detekt").version("1.17.1")
+}
+
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
+
+    detekt {
+        toolVersion = "1.17.1"
+        input = files("$projectDir")
+        config = files("$project.projectDir/config/detekt/detekt.yml")
+        buildUponDefaultConfig = true
+        reports {
+            xml {
+                enabled = true
+                destination = file("$project.projectDir/detekt-report.xml")
+            }
+            html {
+                enabled = true
+                destination = file("$project.projectDir/detekt-report.html")
+            }
+            txt {
+                enabled = true
+                destination = file("$project.projectDir/detekt-report.txt")
+            }
+        }
+    }
+
+}
+
+repositories {
+    jcenter()
+}
+
+configurations {
+    ktlint
+}
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    main = "com.pinterest.ktlint.Main"
+    classpath = configurations.ktlint
+    args "src/**/*.kt"
+}
+
+task ktlintFormat(type: JavaExec, group: "formatting") {
+    description = "Fix Kotlin code style deviations."
+    main = "com.pinterest.ktlint.Main"
+    classpath = configurations.ktlint
+    args "-F", "src/**/*.kt"
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+dependencies {
+    ktlint "com.pinterest:ktlint:0.37.2"
 }

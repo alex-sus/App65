@@ -19,6 +19,7 @@ private const val LEAP_YEAR_MILLISECONDS =
     1000 * 60 * 60 * 24 * 366L // кол-во миллисекунд в високосном году
 private const val NORMAL_YEAR_MILLISECONDS =
     1000 * 60 * 60 * 24 * 365L // кол-во миллисекунд в обычном году
+private const val LEAP_YEAR_PERIOD = 4
 
 class BirthdayAlarmRepository @Inject constructor(
     private val appContext: Context
@@ -81,6 +82,6 @@ class BirthdayAlarmRepository @Inject constructor(
         ).show()
     }
 
-    private fun isLeapYear(date: Calendar) = date[Calendar.YEAR] % 4 == 0
+    private fun isLeapYear(date: Calendar) = date[Calendar.YEAR] % LEAP_YEAR_PERIOD == 0
 
 }

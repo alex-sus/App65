@@ -1,5 +1,6 @@
 package ru.yodata.library.view.map
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -11,7 +12,12 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import ru.yodata.java.entities.LocatedContact
 import ru.yodata.library.R
 import ru.yodata.library.databinding.FragmentContactMapBinding
@@ -32,7 +38,7 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    lateinit var everybodyMapViewModel: EverybodyMapViewModel
+    private lateinit var everybodyMapViewModel: EverybodyMapViewModel
     private lateinit var curContactId: String
     private lateinit var locatedContactList: List<LocatedContact>
     private lateinit var curLocatedContact: LocatedContact
@@ -56,18 +62,18 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         curContactId = parentFragment?.arguments?.getString(CONTACT_ID, "") ?: ""
         everybodyMapViewModel.getLocatedContactList()
-                .observe(viewLifecycleOwner, {
-                    locatedContactList = it
-                    if (locatedContactList.isNotEmpty()) {
-                        // Если у текущего контакта нет координат в БД, то и показать его на карте
-                        // не получится. В этом случае текущим контактом принудительно становится
-                        // первый же контакт из БД, у которого координаты заведомо имеются
-                        curLocatedContact = locatedContactList
-                                .firstOrNull { it.id == curContactId } ?: locatedContactList[0]
-                        // Так как текущим контактом мог стать произвольный контакт, следует
-                        // обновить данные об id текущего контакта
-                        curContactId = curLocatedContact.id
-                        parentFragment?.arguments = Bundle().apply {
+            .observe(viewLifecycleOwner, { list ->
+                locatedContactList = list
+                if (locatedContactList.isNotEmpty()) {
+                    // Если у текущего контакта нет координат в БД, то и показать его на карте
+                    // не получится. В этом случае текущим контактом принудительно становится
+                    // первый же контакт из БД, у которого координаты заведомо имеются
+                    curLocatedContact = locatedContactList
+                        .firstOrNull { it.id == curContactId } ?: locatedContactList[0]
+                    // Так как текущим контактом мог стать произвольный контакт, следует
+                    // обновить данные об id текущего контакта
+                    curContactId = curLocatedContact.id
+                    parentFragment?.arguments = Bundle().apply {
                             putString(CONTACT_ID, curContactId)
                             putSerializable(SCREEN_MODE, MapScreenMode.EVERYBODY)
                         }
@@ -90,37 +96,39 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
         super.onDestroyView()
     }
 
+    @SuppressLint("PotentialBehaviorOverride")
     private val onMapReadyCallback = OnMapReadyCallback { googleMap ->
         map = googleMap
         map.uiSettings.isZoomControlsEnabled = true // добавить на карту кнопки масштабирования
         val curLocation = LatLng(curLocatedContact.latitude, curLocatedContact.longitude)
         if (::curContactMarker.isInitialized) curContactMarker.remove()
-        curContactMarker = map.addMarker(MarkerOptions()
+        map.addMarker(
+            MarkerOptions()
                 .position(curLocation)
                 .snippet(curLocatedContact.id)
-        )
+        )?.let { curContactMarker = it }
         if (locatedContactList.size == 1) {
             val cameraPosition = CameraPosition.Builder()
-                    .target(curLocation)
-                    .zoom(ContactMapSettings.MAP_ZOOM)
-                    .tilt(ContactMapSettings.MAP_TILT)
-                    .build()
+                .target(curLocation)
+                .zoom(ContactMapSettings.MAP_ZOOM)
+                .tilt(ContactMapSettings.MAP_TILT)
+                .build()
             map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
         } else {
             locatedContactList.forEach {
                 if (it.id != curLocatedContact.id) {
                     map.addMarker(MarkerOptions()
-                            .position(LatLng(it.latitude, it.longitude))
-                            .snippet(it.id)
-                            .icon(BitmapDescriptorFactory.defaultMarker(COMMON_MARKERS_COLOR))
+                        .position(LatLng(it.latitude, it.longitude))
+                        .snippet(it.id)
+                        .icon(BitmapDescriptorFactory.defaultMarker(COMMON_MARKERS_COLOR))
                     )
                 }
             }
             map.moveCamera(CameraUpdateFactory
-                    .newLatLngBounds(
-                            locatedContactListLatLngBounds(locatedContactList),
-                            MAP_MARKERS_PADDING
-                    )
+                .newLatLngBounds(
+                    locatedContactListLatLngBounds(locatedContactList),
+                    MAP_MARKERS_PADDING
+                )
             )
         }
         map.setOnMarkerClickListener(onMarkerClickListener)
@@ -142,7 +150,7 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
         true // если тут будет false, то карта будет отцентрована по этому маркеру, что нам не нужно
     }
 
-    fun showLocatedContactDetails(locatedContact: LocatedContact) {
+    private fun showLocatedContactDetails(locatedContact: LocatedContact) {
         with(locatedContact) {
             everybodyMapFrag?.apply {
                 curNameTv.text = name
@@ -170,12 +178,6 @@ class EverybodyMapFragment : Fragment(R.layout.fragment_contact_map) {
 
 // Настройки карты:
 object EverybodyMapSettings {
-
-    // Масштаб изображения карты
-    const val MAP_ZOOM = 13F
-
-    // Угол наклона карты к наблюдателю
-    const val MAP_TILT = 40F
 
     // Для режима показа нескольких маркеров одновременно:
     // Внутренние поля прямоугольной области, содержащей эти маркеры (в dp)

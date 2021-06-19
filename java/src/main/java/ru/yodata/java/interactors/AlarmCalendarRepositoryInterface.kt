@@ -6,8 +6,4 @@ interface AlarmCalendarRepositoryInterface {
 
     fun now(): Calendar
 
-    /*fun getAlarmStartMomentFor(
-        contactBirthday: Calendar,
-        today: Calendar = Calendar.getInstance()
-    ): Calendar*/
 }

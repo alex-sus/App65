@@ -1,6 +1,7 @@
 package ru.yodata.library.data.repository
 
 import android.content.ContentResolver
+import android.database.Cursor
 import android.provider.ContactsContract
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
@@ -46,8 +47,6 @@ class ContactRepository(private val contResolver: ContentResolver) : ContactRepo
     override suspend fun getContactList(): List<BriefContact> =
             withContext(Dispatchers.IO) {
                 val briefContactList = mutableListOf<BriefContact>()
-                Log.d(TAG, "Старт метода: ${this::class.java.simpleName}:" +
-                        "${object {}.javaClass.enclosingMethod.name}")
                 contResolver.query(
                         ContactsContract.Contacts.CONTENT_URI,
                         BRIEF_CONTACTS_PROJECTION,
@@ -132,45 +131,23 @@ class ContactRepository(private val contResolver: ContentResolver) : ContactRepo
                         arrayOf(contactId),
                         null
                 )?.use { cursor ->
-                    Log.d(TAG, "Получение данных текущего контакта. Строк: ${cursor.count}")
                     if (cursor.moveToFirst()) {
                         do {
-                            Log.d(TAG, "Данные текущего контакта: " +
-                                    cursor.getString(CURSOR_MIMETYPE_COLUMN))
                             when (cursor.getString(CURSOR_MIMETYPE_COLUMN)) {
                                 ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE -> {
-                                    if (cursor.getInt(CURSOR_ADDITIONAL_VALUE_COLUMN) ==
-                                            ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY) {
-                                        cursor.getString(CURSOR_MAIN_VALUE_COLUMN)
-                                                .split("-")
-                                                .let { date ->
-                                                    birthday = Calendar.getInstance().apply {
-                                                        set(Calendar.DAY_OF_MONTH, date[2].toInt())
-                                                        set(Calendar.MONTH, date[1].toInt() - 1)
-                                                        set(Calendar.YEAR, date[0].toInt())
-                                                    }
-                                                }
-                                    }
+                                    birthday = getContactBirthday(cursor)
                                 }
                                 ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE -> {
-                                    phones.add(
-                                            cursor.getString(CURSOR_MAIN_VALUE_COLUMN)
-                                                    ?: EMPTY_VALUE
-                                    )
+                                    addContactPhone(cursor, phones)
                                 }
                                 ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE -> {
-                                    emails.add(
-                                            cursor.getString(CURSOR_MAIN_VALUE_COLUMN)
-                                                    ?: EMPTY_VALUE
-                                    )
+                                    addContactEmail(cursor, emails)
                                 }
                                 ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE -> {
-                                    description = cursor.getString(CURSOR_MAIN_VALUE_COLUMN)
-                                            ?: EMPTY_VALUE
+                                    description = getContactDescription(cursor)
                                 }
                             }
                         } while (cursor.moveToNext())
-                        Log.d(TAG, "Получение данных текущего контакта окончено")
                     }
                 }
                 // Получить имя контакта и ссылку на фото (URI) из таблицы ContactsContract.Contacts
@@ -188,14 +165,47 @@ class ContactRepository(private val contResolver: ContentResolver) : ContactRepo
                 }
                 Contact(
                         id = contactId,
-                        name = name,
-                        birthday = birthday,
-                        phone1 = phones.getOrNull(0) ?: EMPTY_VALUE,
-                        phone2 = phones.getOrNull(1) ?: EMPTY_VALUE,
-                        email1 = emails.getOrNull(0) ?: EMPTY_VALUE,
-                        email2 = emails.getOrNull(1) ?: EMPTY_VALUE,
-                        description = description,
-                        bigPhotoUri = bigPhotoUri
+                    name = name,
+                    birthday = birthday,
+                    phone1 = phones.getOrNull(0) ?: EMPTY_VALUE,
+                    phone2 = phones.getOrNull(1) ?: EMPTY_VALUE,
+                    email1 = emails.getOrNull(0) ?: EMPTY_VALUE,
+                    email2 = emails.getOrNull(1) ?: EMPTY_VALUE,
+                    description = description,
+                    bigPhotoUri = bigPhotoUri
                 )
             }
+
+    private fun getContactBirthday(cursor: Cursor): Calendar? =
+        if (cursor.getInt(CURSOR_ADDITIONAL_VALUE_COLUMN) ==
+            ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY
+        ) {
+            cursor.getString(CURSOR_MAIN_VALUE_COLUMN)
+                .split("-")
+                .let { date ->
+                    Calendar.getInstance().apply {
+                        set(Calendar.DAY_OF_MONTH, date[2].toInt())
+                        set(Calendar.MONTH, date[1].toInt() - 1)
+                        set(Calendar.YEAR, date[0].toInt())
+                    }
+                }
+        } else null
+
+    private fun addContactPhone(cursor: Cursor, phones: MutableList<String>) {
+        phones.add(
+            cursor.getString(CURSOR_MAIN_VALUE_COLUMN)
+                ?: EMPTY_VALUE
+        )
+    }
+
+    private fun addContactEmail(cursor: Cursor, emails: MutableList<String>) {
+        emails.add(
+            cursor.getString(CURSOR_MAIN_VALUE_COLUMN)
+                ?: EMPTY_VALUE
+        )
+    }
+
+    private fun getContactDescription(cursor: Cursor): String =
+        cursor.getString(CURSOR_MAIN_VALUE_COLUMN) ?: EMPTY_VALUE
+
 }

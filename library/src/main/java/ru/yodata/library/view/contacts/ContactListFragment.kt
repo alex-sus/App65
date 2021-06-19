@@ -74,11 +74,6 @@ class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
                 try {
                     contactListAdapter.submitList(contactList)
                 } catch (e: IllegalStateException) {
-                    Log.d(
-                        TAG,
-                        "Исключение IllegalStateException в ${this::class.java.simpleName}:" +
-                                "${object {}.javaClass.enclosingMethod.name}"
-                    )
                     Log.d(TAG, e.stackTraceToString())
                 }
             } else
@@ -98,7 +93,7 @@ class ContactListFragment : Fragment(R.layout.fragment_contact_list) {
         // Восстановить значение в поисковой строке, которое автоматически сбрасывается при
         // повороте экрана или переходе на другой фрагмент
         val savedFilter = contactListViewModel.currentFilterValue
-        if (!savedFilter.isNullOrBlank()) {
+        if (savedFilter.isNotBlank()) {
             searchView.run {
                 setQuery(savedFilter, false)
                 isIconified = false

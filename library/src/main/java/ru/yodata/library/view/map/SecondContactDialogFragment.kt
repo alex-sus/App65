@@ -38,7 +38,6 @@ class SecondContactDialogFragment : DialogFragment() {
 
     companion object {
         private const val NAME_LIST = "nlist"
-        val FRAGMENT_NAME: String = SecondContactDialogFragment::class.java.name
 
         @JvmStatic
         fun newInstance(nameList: ArrayList<String>) =

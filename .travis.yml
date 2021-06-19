@@ -1,0 +1,43 @@
+language: android
+dist: trusty
+env:
+  global:
+    - ANDROID_API=30
+    - EMULATOR_API_LEVEL=21
+    - ANDROID_BUILD_TOOLS=30.0.2
+    - ADB_INSTALL_TIMEOUT=5 #таймаут в минутах
+android:
+  components:
+    - platform-tools
+    - tools
+    - build-tools-$ANDROID_BUILD_TOOLS
+    - android-$ANDROID_API
+    - android-$EMULATOR_API_LEVEL
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - addon-google_apis-google-19
+    - sys-img-armeabi-v7a-addon-google_apis-google-$ANDROID_API_LEVEL
+    - sys-img-armeabi-v7a-addon-google_apis-google-$EMULATOR_API_LEVEL
+    - sys-img-armeabi-v7a-android-$EMULATOR_API_LEVEL
+  licenses:
+    - android-sdk-preview-license-.+
+    - android-sdk-license-.+
+    - google-gdk-license-.+
+before_install:
+  - yes | sdkmanager "platforms;android-30"
+  - chmod +x gradlew
+before_script:
+  - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a -c 32M
+  - emulator -avd test -no-skin -no-audio -no-window &
+  - android-wait-for-emulator
+  - sleep 60 # в секундах
+  - adb devices
+  - adb shell input keyevent 82 &
+
+script:
+  - ./gradlew ktlint
+  - ./gradlew detekt
+  - ./gradlew build
+  - ./gradlew test
+  #- ./gradlew clean build connectedCheck -PdisablePreDex
