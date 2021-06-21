@@ -14,7 +14,12 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polyline
 import ru.yodata.java.entities.LocatedContact
 import ru.yodata.library.R
 import ru.yodata.library.databinding.FragmentContactMapBinding
@@ -39,7 +44,7 @@ class RouteMapFragment : Fragment(R.layout.fragment_contact_map) {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    lateinit var routeMapViewModel: RouteMapViewModel
+    private lateinit var routeMapViewModel: RouteMapViewModel
     private lateinit var curContactId: String
     private lateinit var locatedContactList: List<LocatedContact>
     private lateinit var curLocatedContact: LocatedContact
@@ -68,28 +73,28 @@ class RouteMapFragment : Fragment(R.layout.fragment_contact_map) {
         curContactId = parentFragment?.arguments?.getString(CONTACT_ID, "") ?: ""
         // Обзервер списка контактов с координатами
         routeMapViewModel.getLocatedContactList()
-                .observe(viewLifecycleOwner, {
-                    locatedContactList = it
-                    if (locatedContactList.isNotEmpty()) {
-                        // Если у текущего контакта нет координат в БД, то и показать его на карте
-                        // не получится. В этом случае текущим контактом принудительно становится
-                        // первый же контакт из БД, у которого координаты заведомо имеются
-                        curLocatedContact = locatedContactList
-                                .firstOrNull { it.id == curContactId } ?: locatedContactList[0]
-                        // Так как текущим контактом мог стать произвольный контакт, следует
-                        // обновить данные об id текущего контакта
-                        curContactId = curLocatedContact.id
-                        parentFragment?.arguments = Bundle().apply {
-                            putString(CONTACT_ID, curContactId)
-                            putSerializable(SCREEN_MODE, MapScreenMode.ROUTE)
-                        }
-                        mapFragment?.getMapAsync(onMapReadyCallback)
-                        showFirstContactDetails(curLocatedContact)
-                        secondContactDialogFragment = SecondContactDialogFragment
-                                .newInstance(locatedContactList.map { it.name } as ArrayList<String>)
-                        setFragmentResultListener(DIALOG_REQUEST_KEY, setSecondContactListener)
-                    } else { // пока нет ни одного контакта с координатами в БД - нечего отображать
-                        routeMapFrag?.curContactGroup?.visibility = View.INVISIBLE
+            .observe(viewLifecycleOwner, { list ->
+                locatedContactList = list
+                if (locatedContactList.isNotEmpty()) {
+                    // Если у текущего контакта нет координат в БД, то и показать его на карте
+                    // не получится. В этом случае текущим контактом принудительно становится
+                    // первый же контакт из БД, у которого координаты заведомо имеются
+                    curLocatedContact = locatedContactList
+                        .firstOrNull { it.id == curContactId } ?: locatedContactList[0]
+                    // Так как текущим контактом мог стать произвольный контакт, следует
+                    // обновить данные об id текущего контакта
+                    curContactId = curLocatedContact.id
+                    parentFragment?.arguments = Bundle().apply {
+                        putString(CONTACT_ID, curContactId)
+                        putSerializable(SCREEN_MODE, MapScreenMode.ROUTE)
+                    }
+                    mapFragment?.getMapAsync(onMapReadyCallback)
+                    showFirstContactDetails(curLocatedContact)
+                    secondContactDialogFragment = SecondContactDialogFragment
+                        .newInstance(locatedContactList.map { it.name } as ArrayList<String>)
+                    setFragmentResultListener(DIALOG_REQUEST_KEY, setSecondContactListener)
+                } else { // пока нет ни одного контакта с координатами в БД - нечего отображать
+                    routeMapFrag?.curContactGroup?.visibility = View.INVISIBLE
                         Toast.makeText(
                                 context,
                                 getString(R.string.not_enough_contact_locations_msg),
@@ -110,11 +115,11 @@ class RouteMapFragment : Fragment(R.layout.fragment_contact_map) {
         val curLocation = LatLng(curLocatedContact.latitude, curLocatedContact.longitude)
         if (::curContactMarker.isInitialized) curContactMarker.remove()
         // Отобразить первый маркер (текущего контакта)
-        curContactMarker = map.addMarker(
+        map.addMarker(
             MarkerOptions()
                 .position(curLocation)
                 .title(curLocatedContact.name)
-        )
+        )?.let { curContactMarker = it }
         val cameraPosition = CameraPosition.Builder()
             .target(curLocation)
             .zoom(ContactMapSettings.MAP_ZOOM)
@@ -179,11 +184,11 @@ class RouteMapFragment : Fragment(R.layout.fragment_contact_map) {
             })
         if (::secondContactMarker.isInitialized) secondContactMarker.remove()
         // Отобразить маркер второго контакта на карте, смасштабировав ее, чтобы поместились оба
-        secondContactMarker = map.addMarker(
+        map.addMarker(
             MarkerOptions()
                 .position(LatLng(secondLocatedContact.latitude, secondLocatedContact.longitude))
                 .title(secondLocatedContact.name)
-        )
+        )?.let { secondContactMarker = it }
         map.moveCamera(
             CameraUpdateFactory
                 .newLatLngBounds(
@@ -244,12 +249,6 @@ class RouteMapFragment : Fragment(R.layout.fragment_contact_map) {
 
 // Настройки карты:
 object RouteMapSettings {
-
-    // Масштаб изображения карты
-    const val MAP_ZOOM = 13F
-
-    // Угол наклона карты к наблюдателю
-    const val MAP_TILT = 40F
 
     // Для режима показа нескольких маркеров одновременно:
     // Внутренние поля прямоугольной области, содержащей эти маркеры (в dp)

@@ -22,9 +22,10 @@ import ru.yodata.library.utils.Constants.TAG
 import javax.inject.Inject
 
 const val METERS_TO_KILOMETERS = 0.001
+
 class RouteMapViewModel @Inject constructor(
     private val interactor: RouteMapInteractor,
-    private val appContext: Context
+    appContext: Context
 ) : ViewModel() {
 
     private val locatedContactList = MutableLiveData<List<LocatedContact>>()
@@ -59,8 +60,7 @@ class RouteMapViewModel @Inject constructor(
                 positionLongitude = firstContact.longitude,
                 destinationLatitude = secondContact.latitude,
                 destinationLongitude = secondContact.longitude,
-                mode,
-                googleMapApiKey
+                mode
             )
         } else contactRouteDecodedDetails.value = null
         return contactRouteDecodedDetails
@@ -79,8 +79,7 @@ class RouteMapViewModel @Inject constructor(
         positionLongitude: Double,
         destinationLatitude: Double,
         destinationLongitude: Double,
-        mode: String,
-        key: String
+        mode: String
     ) {
         viewModelScope.launch {
             contactRouteDecodedDetails.value =
@@ -91,7 +90,7 @@ class RouteMapViewModel @Inject constructor(
                                     destinationLatitude = destinationLatitude,
                                     destinationLongitude = destinationLongitude,
                                     mode = mode,
-                                    key = key
+                                key = googleMapApiKey
                             )
                     )
         }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="yandex_geocoder_api_key" translatable="false">fb8eb52d-ac46-4a56-881e-0b312fbbd55d</string>
+    <string name="google_maps_key" translatable="false">AIzaSyAzMLihMG3YUuJTsuwHjpSYjZeoqGKzR8E</string>
+</resources>

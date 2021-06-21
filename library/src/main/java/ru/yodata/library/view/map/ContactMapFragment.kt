@@ -1,5 +1,6 @@
 package ru.yodata.library.view.map
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -38,11 +39,7 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    lateinit var contactLocationsViewModel: ContactLocationsViewModel
-
-    /*private val contactId: String by lazy {
-        requireArguments().getString(CONTACT_ID, "")
-    }*/
+    private lateinit var contactLocationsViewModel: ContactLocationsViewModel
     private lateinit var contactId: String
     private lateinit var map: GoogleMap
     private var mapReady = false
@@ -71,32 +68,7 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
         contactLocationsViewModel.getLocatedContactList()
                 .observe(viewLifecycleOwner, { locatedContactList ->
                     // Попытаться найти текущий контакт в списке из БД координат
-                    Log.d(TAG, "ContactMapFragment: начинаю поиск контакта в списке БД...")
-                    Log.d(TAG, "locatedContactList = $locatedContactList")
-                    val existLocatedContact = locatedContactList.firstOrNull { it.id == contactId }
-                    if (existLocatedContact != null) {
-                        curLocatedContact = existLocatedContact
-                        mapFragment?.getMapAsync(onMapReadyCallback)
-                        Log.d(TAG, "ContactMapFragment: старт карты в первом обзервере")
-                        Log.d(TAG, "ContactMapFragment: поиск контакта в списке БД окончен.")
-                        Log.d(TAG, "curLocatedContact = $curLocatedContact")
-                        contactMapFrag?.apply {
-                            curNameTv.text = curLocatedContact.name
-                            if (!curLocatedContact.photoUri.isNullOrEmpty()) {
-                                curPhotoIv.setImageURI(curLocatedContact.photoUri?.toUri())
-                            } else {
-                                curPhotoIv.setImageResource(R.drawable.programmer2_70)
-                            }
-                            curLatitudeTv.text = curLocatedContact.latitude.toString()
-                            curLongitudeTv.text = curLocatedContact.longitude.toString()
-                            curAddressTv.text = curLocatedContact.address
-                        }
-                    } else {
-                        // У текущего контакта еще не назначены координаты в БД
-                        // поэтому нужно получить id, имя и фото контакта из ContentResolver
-                        isNewContactWithoutLocation = true
-                        contactLocationsViewModel.getBriefContactById(contactId)
-                    }
+                    findAndShowLocatedContact(mapFragment, locatedContactList)
                 })
         // Обзервер работает с контактами, координат которых еще нет в БД
         contactLocationsViewModel.getBriefContactById(contactId)
@@ -112,7 +84,6 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
                                     address = ""
                             )
                             mapFragment?.getMapAsync(onMapReadyCallback)
-                            Log.d(TAG, "ContactMapFragment: старт карты во втором обзервере")
                             contactMapFrag?.apply {
                                 curNameTv.text = curLocatedContact.name
                                 if (!curLocatedContact.photoUri.isNullOrEmpty()) {
@@ -122,8 +93,8 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
                                 }
                             }
                         } else {
-                            // id текущего контакта не найден в ContentResolver - такой ситуации вообще
-                            // не должно быть при нормальной работе приложения
+                            // id текущего контакта не найден в ContentResolver - такой ситуации
+                            // вообще не должно быть при нормальной работе приложения
                             requireActivity().supportFragmentManager.popBackStack()
                         }
                     }
@@ -149,16 +120,50 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
         contactMapFrag?.saveLocationFab?.setOnClickListener { saveChangedLocationData() }
     }
 
+    private fun findAndShowLocatedContact(
+        mapFragment: SupportMapFragment?,
+        locatedContactList: List<LocatedContact>
+    ) {
+        // Попытаться найти текущий контакт в списке из БД координат
+        val existLocatedContact = locatedContactList.firstOrNull { it.id == contactId }
+        if (existLocatedContact != null) {
+            curLocatedContact = existLocatedContact
+            mapFragment?.getMapAsync(onMapReadyCallback)
+            contactMapFrag?.apply {
+                curNameTv.text = curLocatedContact.name
+                if (!curLocatedContact.photoUri.isNullOrEmpty()) {
+                    curPhotoIv.setImageURI(curLocatedContact.photoUri?.toUri())
+                } else {
+                    curPhotoIv.setImageResource(R.drawable.programmer2_70)
+                }
+                curLatitudeTv.text = curLocatedContact.latitude.toString()
+                curLongitudeTv.text = curLocatedContact.longitude.toString()
+                curAddressTv.text = curLocatedContact.address
+            }
+        } else {
+            // У текущего контакта еще не назначены координаты в БД
+            // поэтому нужно получить id, имя и фото контакта из ContentResolver
+            isNewContactWithoutLocation = true
+            contactLocationsViewModel.getBriefContactById(contactId)
+        }
+    }
+
     override fun onDestroyView() {
         contactMapFrag = null
         super.onDestroyView()
     }
 
+    @SuppressLint("PotentialBehaviorOverride")
     private val onMapReadyCallback = OnMapReadyCallback { googleMap ->
         map = googleMap
         map.uiSettings.isZoomControlsEnabled = true // добавить на карту кнопки масштабирования
         // Получить координаты измененного местоположения контакта (если менялось)
-        var startLocation = contactLocationsViewModel.getChangedLatLngData()
+        var startLocation = curChangedLocationData?.let {
+            LatLng(
+                it.latitude,
+                it.longitude
+            )
+        }
         if (startLocation == null) { // пользователь не менял местоположение контакта
             Log.d(TAG, "startLocation == null")
             if (isNewContactWithoutLocation) { // у контакта еще нет местоположения в БД
@@ -166,19 +171,20 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
             } else { // у контакта уже есть местоположение в БД
                 startLocation = LatLng(curLocatedContact.latitude, curLocatedContact.longitude)
                 if (::curContactMarker.isInitialized) curContactMarker.remove()
-                curContactMarker = map.addMarker(MarkerOptions().position(startLocation))
+                map.addMarker(MarkerOptions().position(startLocation))
+                    ?.let { curContactMarker = it }
             }
         } else { // пользователь изменил местоположение контакта и пока не сохранил его
             Log.d(TAG, "startLocation не null")
             if (::curContactMarker.isInitialized) curContactMarker.remove()
-            curContactMarker = map.addMarker(MarkerOptions().position(startLocation))
+            map.addMarker(MarkerOptions().position(startLocation))?.let { curContactMarker = it }
             contactMapFrag?.saveLocationFab?.visibility = View.VISIBLE
         }
         val cameraPosition = CameraPosition.Builder()
-                .target(startLocation)
-                .zoom(MAP_ZOOM)
-                .tilt(MAP_TILT)
-                .build()
+            .target(startLocation)
+            .zoom(MAP_ZOOM)
+            .tilt(MAP_TILT)
+            .build()
         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
         map.setOnMapClickListener(onMapClickListener)
         map.setOnMarkerClickListener { true } // отключает стандартную реакцию на щелчок по маркеру
@@ -190,7 +196,7 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
             Log.d(TAG, "ContactMapFragment:onMapClickListener есть клик по карте")
             contactMapFrag?.geocodingProgressBar?.visibility = View.VISIBLE
             if (::curContactMarker.isInitialized) curContactMarker.remove()
-            curContactMarker = map.addMarker(MarkerOptions().position(point))
+            map.addMarker(MarkerOptions().position(point))?.let { curContactMarker = it }
             contactLocationsViewModel.setChangedLocationData(
                     LocationData(
                             latitude = point.latitude,
@@ -233,7 +239,9 @@ class ContactMapFragment : Fragment(R.layout.fragment_contact_map) {
 // Настройки карты:
 object ContactMapSettings {
     // Место, которое показывается на карте, если координаты еще не назначены (Ижевск)
-    val START_LOCATION = LatLng(56.851, 53.214)
+    private const val IZHEVSK_LATITUDE = 56.851
+    private const val IZHEVSK_LONGITUDE = 53.214
+    val START_LOCATION = LatLng(IZHEVSK_LATITUDE, IZHEVSK_LONGITUDE)
 
     // Масштаб изображения карты
     const val MAP_ZOOM = 13F

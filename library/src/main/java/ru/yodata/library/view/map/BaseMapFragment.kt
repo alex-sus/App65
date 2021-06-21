@@ -14,10 +14,7 @@ import ru.yodata.library.utils.MapScreenMode
 // Содержит нижнее меню и контейнер для запуска в нем дочерних фрагментов
 class BaseMapFragment : Fragment() {
 
-    lateinit var mapMenuView: BottomNavigationView
-    private val contactId: String by lazy {
-        requireArguments().getString(CONTACT_ID, "")
-    }
+    private var mapMenuView: BottomNavigationView? = null
     private val screenMode: MapScreenMode by lazy {
         requireArguments().getSerializable(SCREEN_MODE) as MapScreenMode
     }
@@ -30,32 +27,37 @@ class BaseMapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mapMenuView = view.findViewById(R.id.mapMenuNavView)
-        mapMenuView.setOnNavigationItemSelectedListener(mapMenuItemSelectedListener)
+        mapMenuView?.setOnNavigationItemSelectedListener(mapMenuItemSelectedListener)
         if (savedInstanceState == null) {
             // В зависимости от заданного стартового экрана активировать соответствующий пункт
             // нижнего меню
             when (screenMode) {
                 MapScreenMode.CONTACT -> {
-                    mapMenuView.selectedItemId = R.id.singleItem
+                    mapMenuView?.selectedItemId = R.id.singleItem
                 }
                 MapScreenMode.ROUTE -> {
-                    mapMenuView.selectedItemId = R.id.routeItem
+                    mapMenuView?.selectedItemId = R.id.routeItem
                 }
                 MapScreenMode.EVERYBODY -> {
-                    mapMenuView.selectedItemId = R.id.everybodyItem
+                    mapMenuView?.selectedItemId = R.id.everybodyItem
                 }
             }
         }
     }
 
+    override fun onDestroyView() {
+        mapMenuView = null
+        super.onDestroyView()
+    }
+
     private val mapMenuItemSelectedListener =
-            BottomNavigationView.OnNavigationItemSelectedListener { item ->
-                when (item.itemId) {
-                    R.id.singleItem -> {
-                        this.arguments = Bundle().apply {
-                            putString(CONTACT_ID, requireArguments().getString(CONTACT_ID, ""))
-                            putSerializable(SCREEN_MODE, MapScreenMode.CONTACT)
-                        }
+        BottomNavigationView.OnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.singleItem -> {
+                    this.arguments = Bundle().apply {
+                        putString(CONTACT_ID, requireArguments().getString(CONTACT_ID, ""))
+                        putSerializable(SCREEN_MODE, MapScreenMode.CONTACT)
+                    }
                         openSelectedFragment(ContactMapFragment()) //.newInstance(contactId))
                         return@OnNavigationItemSelectedListener true
                     }
@@ -89,9 +91,6 @@ class BaseMapFragment : Fragment() {
                 .commit()
     }
 
-    /*private fun getCurrentContactId(): String =
-            requireArguments().getString(CONTACT_ID, "")
-*/
     companion object {
         private const val CONTACT_ID = "id"
         private const val SCREEN_MODE = "mode"

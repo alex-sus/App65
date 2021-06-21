@@ -32,9 +32,9 @@ class GoogleDirectionsRepository(
         }
         return if (responce.status == OK_RESPONCE_STATUS) {
             if (responce.routes.isNotEmpty()) {
-                var distance: Int = 0
+                var distance = 0
                 with(responce.routes[0]) {
-                    legs.forEach { distance = distance + it.distance.value }
+                    legs.forEach { distance += it.distance.value }
                     ContactRouteDetails(
                             encodedRoutePolyline = overviewPolyline.points,
                             routeDistance = distance,
@@ -47,7 +47,7 @@ class GoogleDirectionsRepository(
             } else null
         } else {
             Log.d(TAG, "GoogleDirectionsRepository маршрут не получен: ${responce.status}")
-            Log.d(TAG, "Причина: ${responce}")
+            Log.d(TAG, "Причина: $responce")
             null
         }
     }

@@ -1,7 +1,5 @@
 package ru.yodata.library.view
 
-//import ru.yodata.app65.utils.service.ContactLoaderService
-//import ru.yodata.app65.utils.service.OnContactLoaderServiceCallback
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
@@ -23,7 +21,7 @@ private const val LAUNCHER_START_INTENT = "android.intent.action.MAIN"
 
 class MainActivity : AppCompatActivity(), OnContactListCallback, OnMapFragmentCallback {
 
-    val askPermissions = arrayOf(
+    private val askPermissions = arrayOf(
         Manifest.permission.READ_CONTACTS
     )
     private val curIntent by lazy(LazyThreadSafetyMode.NONE) { intent }

@@ -25,7 +25,6 @@ class ContactDetailsModelTest {
 
     private val birthdayAlarmRepository: BirthdayAlarmRepositoryInterface = mock()
 
-    //private val alarmCalendarRepository = AlarmCalendarRepository()
     private val ivanContact = Contact(
         id = "1",
         name = "Иван Иванович",
@@ -209,27 +208,4 @@ class ContactDetailsModelTest {
         )
     }
 
-    /*private fun mockBirthdayAlarmSetting(
-        curDay: Int,
-        curMonth: Int,
-        curYear: Int
-    ): ContactDetailsInteractor {
-        return ContactDetailsModel(
-            contactRepository = mock(),
-            locationRepository = mock(),
-            alarmRepository = birthdayAlarmRepository,
-            calendarRepository = mock {
-                on { getAlarmStartMomentFor(any(), any()) }.then {
-                    alarmCalendarRepository.getAlarmStartMomentFor(
-                        contactBirthday = it.arguments[0] as Calendar,
-                        today = Calendar.getInstance().apply {
-                            set(Calendar.DAY_OF_MONTH, curDay)
-                            set(Calendar.MONTH, curMonth)
-                            set(Calendar.YEAR, curYear)
-                        }
-                    )
-                }
-            }
-        )
-    }*/
 }

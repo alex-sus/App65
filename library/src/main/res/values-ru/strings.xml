@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">App65</string>
+    <string name="yandex_geocoder_api_key">fb8eb52d-ac46-4a56-881e-0b312fbbd55d</string>
+    <string name="google_maps_key">AIzaSyAzMLihMG3YUuJTsuwHjpSYjZeoqGKzR8E</string>
     <string name="phone1_label">Телефон #1:</string>
     <string name="phone2_label">Телефон #2:</string>
     <string name="email1_label">E-mail #1:</string>
