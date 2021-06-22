@@ -2,6 +2,9 @@ package ru.yodata.library.data.repository
 
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import ru.yodata.java.entities.LocatedContact
 import ru.yodata.java.entities.LocationData
@@ -16,16 +19,17 @@ class ContactLocationRepository(
         private val contactRepositoryInterface: ContactRepositoryInterface
 ) : ContactLocationRepositoryInterface {
 
-    override suspend fun getLocationDataById(contactId: String): LocationData? =
-            withContext(Dispatchers.IO) {
+    override suspend fun getLocationDataById(contactId: String): Flow<LocationData?> =
+            flow {
+                emit(
                 db.contactLocationDao().getContactLocationById(contactId)?.let {
                     LocationData(
                             latitude = it.latitude,
                             longitude = it.longitude,
                             address = it.address
                     )
-                }
-            }
+                } )
+            }.flowOn(Dispatchers.IO)
 
     override suspend fun getLocatedContactList(): List<LocatedContact>? =
             withContext(Dispatchers.IO) {

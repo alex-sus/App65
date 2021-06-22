@@ -67,7 +67,7 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
             navigateCallback?.navigateToBaseMapFragment(contactId, MapScreenMode.CONTACT)
         }
         detailsFrag?.deleteLocationDataFab?.setOnClickListener(deleteLocationDataFabListener)
-        lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             contactDetailsViewModel.getContactStateById(contactId).collect { state ->
                 if (state != null) {
                     try {

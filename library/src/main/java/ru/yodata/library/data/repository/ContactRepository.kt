@@ -5,6 +5,9 @@ import android.database.Cursor
 import android.provider.ContactsContract
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -87,6 +90,7 @@ class ContactRepository(private val contResolver: ContentResolver) : ContactRepo
                                             phones.add(cursor.getString(CURSOR_PHONE_COLUMN))
                                         } while (cursor.moveToNext())
                                         contact.phone = phones.getOrNull(0) ?: EMPTY_VALUE
+                                        // contact = contact.copy(phone = phones.getOrNull(0) ?: EMPTY_VALUE)
                                         phones.clear()
                                     }
                                 }
@@ -107,30 +111,31 @@ class ContactRepository(private val contResolver: ContentResolver) : ContactRepo
                 )?.use { cursor ->
                     if (cursor.moveToFirst()) {
                         BriefContact(
-                                id = cursor.getString(CURSOR_LOOKUP_KEY_COLUMN),
-                                name = cursor.getString(CURSOR_DISPLAY_NAME_COLUMN),
-                                phone = EMPTY_VALUE,
-                                photoUri = cursor.getString(CURSOR_PHOTO_URI_COLUMN)
+                            id = cursor.getString(CURSOR_LOOKUP_KEY_COLUMN),
+                            name = cursor.getString(CURSOR_DISPLAY_NAME_COLUMN),
+                            phone = EMPTY_VALUE,
+                            photoUri = cursor.getString(CURSOR_PHOTO_URI_COLUMN)
                         )
                     } else null
                 }
             }
 
-    override suspend fun getContactById(contactId: String): Contact =
-            withContext(Dispatchers.IO) {
-                var name = EMPTY_VALUE
-                var birthday: Calendar? = null
-                val phones = mutableListOf<String>()
-                val emails = mutableListOf<String>()
-                var description = EMPTY_VALUE
-                var bigPhotoUri: String? = null
-                contResolver.query(
-                        ContactsContract.Data.CONTENT_URI,
-                        DETAIL_PROJECTION,
-                        CUR_CONTACT_DATA_SELECTION,
-                        arrayOf(contactId),
-                        null
-                )?.use { cursor ->
+    override suspend fun getContactById(contactId: String): Flow<Contact> =
+        flow {
+            //withContext(Dispatchers.IO) {
+            var name = EMPTY_VALUE
+            var birthday: Calendar? = null
+            val phones = mutableListOf<String>()
+            val emails = mutableListOf<String>()
+            var description = EMPTY_VALUE
+            var bigPhotoUri: String? = null
+            contResolver.query(
+                ContactsContract.Data.CONTENT_URI,
+                DETAIL_PROJECTION,
+                CUR_CONTACT_DATA_SELECTION,
+                arrayOf(contactId),
+                null
+            )?.use { cursor ->
                     if (cursor.moveToFirst()) {
                         do {
                             when (cursor.getString(CURSOR_MIMETYPE_COLUMN)) {
@@ -152,19 +157,20 @@ class ContactRepository(private val contResolver: ContentResolver) : ContactRepo
                 }
                 // Получить имя контакта и ссылку на фото (URI) из таблицы ContactsContract.Contacts
                 contResolver.query(
-                        ContactsContract.Contacts.CONTENT_URI,
-                        BRIEF_CONTACTS_PROJECTION,
-                        CUR_CONTACT_SELECTION,
-                        arrayOf(contactId),
-                        null
+                    ContactsContract.Contacts.CONTENT_URI,
+                    BRIEF_CONTACTS_PROJECTION,
+                    CUR_CONTACT_SELECTION,
+                    arrayOf(contactId),
+                    null
                 )?.use { cursor ->
                     if (cursor.moveToFirst()) {
                         name = cursor.getString(CURSOR_DISPLAY_NAME_COLUMN)
                         bigPhotoUri = cursor.getString(CURSOR_PHOTO_URI_COLUMN)
                     }
                 }
+            emit(
                 Contact(
-                        id = contactId,
+                    id = contactId,
                     name = name,
                     birthday = birthday,
                     phone1 = phones.getOrNull(0) ?: EMPTY_VALUE,
@@ -174,7 +180,9 @@ class ContactRepository(private val contResolver: ContentResolver) : ContactRepo
                     description = description,
                     bigPhotoUri = bigPhotoUri
                 )
-            }
+            )
+            // }
+        }.flowOn(Dispatchers.IO)
 
     private fun getContactBirthday(cursor: Cursor): Calendar? =
         if (cursor.getInt(CURSOR_ADDITIONAL_VALUE_COLUMN) ==
