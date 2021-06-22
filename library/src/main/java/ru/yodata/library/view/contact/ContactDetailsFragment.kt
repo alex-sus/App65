@@ -8,6 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import ru.yodata.java.entities.Contact
 import ru.yodata.java.entities.LocationData
 import ru.yodata.library.R
@@ -54,6 +57,7 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
         contactDetailsViewModel = injectViewModel(viewModelFactory)
     }
 
+    @InternalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         detailsFrag = FragmentContactDetailsBinding.bind(view)
@@ -63,7 +67,32 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
             navigateCallback?.navigateToBaseMapFragment(contactId, MapScreenMode.CONTACT)
         }
         detailsFrag?.deleteLocationDataFab?.setOnClickListener(deleteLocationDataFabListener)
-        // Обзервер для данных текущего контакта, не включая данные о его местоположении
+        lifecycleScope.launchWhenStarted {
+            contactDetailsViewModel.getContactStateById(contactId).collect { state ->
+                if (state != null) {
+                    try {
+                        val curContact = state.contactDetails
+                        if (curContact != null) {
+                            showContactDetails(curContact)
+                            detailsFrag?.remindBtn?.setOnCheckedChangeListener { _, isChecked ->
+                                if (isChecked) contactDetailsViewModel.setBirthdayAlarm(curContact)
+                                else contactDetailsViewModel.cancelBirthdayAlarm(curContact)
+                            }
+                        }
+                        val curLocation = state.locationData
+                        if (curLocation != null) {
+                            showLocationData(curLocation)
+                        }
+                    } catch (e: IllegalStateException) {
+                        Log.d(TAG, "Исключение в ContactDetailsFragment: ")
+                        Log.d(TAG, e.stackTraceToString())
+                    }
+
+                }
+
+            }
+        }
+        /*// Обзервер для данных текущего контакта, не включая данные о его местоположении
         contactDetailsViewModel.getContactById(contactId)
                 .observe(viewLifecycleOwner, { curContact ->
                     if (curContact != null) {
@@ -88,7 +117,7 @@ class ContactDetailsFragment : Fragment(R.layout.fragment_contact_details) {
                         Log.d(TAG, "Исключение в ContactDetailsFragment: ")
                         Log.d(TAG, e.stackTraceToString())
                     }
-                })
+                })*/
     }
 
     override fun onDestroyView() {
