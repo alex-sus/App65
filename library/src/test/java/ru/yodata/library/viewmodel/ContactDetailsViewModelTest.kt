@@ -19,6 +19,8 @@ import java.util.*
 private const val DAY_OF_MONTH_8 = 8
 private const val YEAR_1980 = 1980
 
+// Интеграционные тесты на JUnit
+
 class ContactDetailsViewModelTest {
 
     @ExperimentalCoroutinesApi
