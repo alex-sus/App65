@@ -1,14 +1,15 @@
 package ru.yodata.java.interactors.contact
 
+import kotlinx.coroutines.flow.Flow
 import ru.yodata.java.entities.Contact
 import ru.yodata.java.entities.LocationData
 import java.util.*
 
 interface ContactDetailsInteractor {
 
-    suspend fun getContactById(contactId: String): Contact
+    suspend fun getContactById(contactId: String): Flow<Contact>
 
-    suspend fun getLocationDataById(contactId: String): LocationData?
+    suspend fun getLocationDataById(contactId: String): Flow<LocationData?>
 
     suspend fun deleteLocationDataById(contactId: String)
 
@@ -18,8 +19,5 @@ interface ContactDetailsInteractor {
 
     fun isBirthdayAlarmOn(curContact: Contact): Boolean
 
-    fun getAlarmStartMomentFor(
-        contactBirthday: Calendar,
-        //today: Calendar = Calendar.getInstance()
-    ): Calendar
+    fun getAlarmStartMomentFor(contactBirthday: Calendar): Calendar
 }

@@ -1,5 +1,6 @@
 package ru.yodata.java.interactors.contact
 
+import kotlinx.coroutines.flow.Flow
 import ru.yodata.java.entities.Contact
 import ru.yodata.java.entities.LocationData
 import ru.yodata.java.interactors.AlarmCalendarRepositoryInterface
@@ -21,10 +22,10 @@ class ContactDetailsModel(
     private val calendarRepository: AlarmCalendarRepositoryInterface
 ) : ContactDetailsInteractor {
 
-    override suspend fun getContactById(contactId: String): Contact =
+    override suspend fun getContactById(contactId: String): Flow<Contact> =
         contactRepository.getContactById(contactId)
 
-    override suspend fun getLocationDataById(contactId: String): LocationData? =
+    override suspend fun getLocationDataById(contactId: String): Flow<LocationData?> =
         locationRepository.getLocationDataById(contactId)
 
     override suspend fun deleteLocationDataById(contactId: String) {
