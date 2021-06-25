@@ -21,6 +21,7 @@ private const val YEAR_1999 = 1999
 private const val YEAR_2000 = 2000
 private const val YEAR_2004 = 2004
 
+// Unit-тестирование на JUnit
 class ContactDetailsModelTest {
 
     private val birthdayAlarmRepository: BirthdayAlarmRepositoryInterface = mock()

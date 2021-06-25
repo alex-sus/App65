@@ -8,7 +8,7 @@ buildscript {
     ext.spek_version = "2.0.12"
     repositories {
         google()
-        mavenCentral()
+        jcenter()
         /*maven {
             url "https://plugins.gradle.org/m2/"
         }*/
@@ -16,6 +16,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath("de.mannodermaus.gradle.plugins:android-junit5:1.7.1.1")
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -29,31 +30,32 @@ plugins {
 allprojects {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
+        maven { url "https://dl.bintray.com/spekframework/spek-dev" }
     }
+}
 
-    detekt {
-        toolVersion = "1.17.1"
-        input = files("$projectDir")
-        config = files("$project.projectDir/config/detekt/detekt.yml")
-        buildUponDefaultConfig = true
-        reports {
-            xml {
-                enabled = true
-                destination = file("$project.projectDir/detekt-report.xml")
-            }
-            html {
-                enabled = true
-                destination = file("$project.projectDir/detekt-report.html")
-            }
-            txt {
-                enabled = true
-                destination = file("$project.projectDir/detekt-report.txt")
-            }
+detekt {
+    toolVersion = "1.17.1"
+    input = files("$projectDir")
+    config = files("$project.projectDir/config/detekt/detekt.yml")
+    buildUponDefaultConfig = true
+    reports {
+        xml {
+            enabled = true
+            destination = file("$project.projectDir/detekt-report.xml")
+        }
+        html {
+            enabled = true
+            destination = file("$project.projectDir/detekt-report.html")
+        }
+        txt {
+            enabled = true
+            destination = file("$project.projectDir/detekt-report.txt")
         }
     }
-
 }
+
 
 repositories {
     jcenter()
